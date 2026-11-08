@@ -6,7 +6,7 @@
 
 插件以 **DSH 组合包（bundle）** 形式发布到 npm：`@feiry-zz/dsh-ui-accent`。在 DSH 的插件管理里填包名即可安装，Windows / macOS / Linux 通用。
 
-界面文案跟随 DSH 通用设置的中英文切换（`locale` 服务），效果预览列举全部 15 项设置，并在固定高度内独立滚动。
+界面文案跟随 DSH 通用设置的语言（`locale` 服务，覆盖 DSH 支持的全部 8 种语言），效果预览列举全部 15 项设置，并在固定高度内独立滚动。
 
 ![效果预览](./preview/preview.png)
 
@@ -18,7 +18,7 @@
 
 - **按语义着色**：结果标题（Markdown 标题）、加粗文字、行内代码、思考、提问，以及运行命令 / 编辑 / 写入 / 读取 / 搜索 / 代码 / 任务 / 技能 / 插件 / 其他工具共 15 类。
 - **拖动即时预览**：取色器拖动时颜色变化合并到每帧一次写 CSS 变量，只写变化的那一个变量；落盘与预览滚动延后到取色停顿后，拖动跟手不卡顿。
-- **中英文双语**：向 DSH 的 `locale` 服务注册 `settings.uiAccent` 命名空间，切换语言后面板与侧边栏标题即时更新。
+- **跟随 DSH 语言**：向 `locale` 服务注册 `settings.uiAccent` 命名空间，覆盖 DSH 支持的全部 8 种语言——中文 / English / 日本語 / Español / Français / Deutsch / Русский / Português，切换语言后面板与侧边栏标题即时更新。
 - **默认值可演进**：存储只保存「与出厂默认不同」的项，插件调整默认色时，没动过的分类自动跟随新默认。
 - **主题友好**：思考与行内代码默认不覆盖，分别沿用 DSH 原色灰和超链接蓝，跟随深浅色主题。
 
@@ -123,7 +123,7 @@ Host 端激活后会写一行日志到 `<DSH_HOME>/logs/ui-accent.log`，可用�
 dsh-ui-accent/
 ├─ package.json           # dsh.bundle（组合包补丁）+ dsh.client（platform: web / inject）
 ├─ cordis.patch.yml       # 组合包补丁：把自己注册成插件条目
-├─ locale/                # 插件管理里展示的标题与描述（zh / en）
+├─ locale/                # 插件管理里展示的标题与描述（8 种语言）
 ├─ icon.svg               # 插件图标
 ├─ build.mjs              # 把 src/theme.css 内联进 lib/client.js
 ├─ install.mjs            # 本地链接安装/卸载脚本（跨平台，仅用 Node 标准库）

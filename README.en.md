@@ -18,7 +18,7 @@ Settings panel: the preview box is 220px tall and sticks to the top of the conte
 
 - **Color by meaning**: result titles (Markdown headings), bold text, inline code, thinking, questions, plus 10 tool categories — run command / edit / write / read / search / code / task / skill / plugin / other tools (15 in total).
 - **Smooth dragging**: while you drag the color picker, changes are coalesced into one CSS variable write per frame and only the changed variable is touched; persistence and preview scrolling wait until you pause, so the picker stays responsive.
-- **Bilingual UI**: registers the `settings.uiAccent` namespace on the DSH `locale` service, so the panel and the sidebar entry follow language switches immediately.
+- **Follows the DSH locale**: registers the `settings.uiAccent` namespace on the DSH `locale` service for all 8 languages DSH ships — Chinese / English / 日本語 / Español / Français / Deutsch / Русский / Português; the panel and the sidebar entry update as soon as you switch.
 - **Evolving defaults**: storage keeps only values that differ from the built-in defaults, so untouched categories pick up a new default automatically.
 - **Theme aware**: thinking and inline code are not overridden by default — they keep the DSH grey and the link blue, and follow light/dark themes.
 
@@ -123,7 +123,7 @@ On activation the host half appends a line to `<DSH_HOME>/logs/ui-accent.log`:
 dsh-ui-accent/
 ├─ package.json           # dsh.bundle (bundle patch) + dsh.client (platform: web / inject)
 ├─ cordis.patch.yml       # bundle patch: registers the plugin entry itself
-├─ locale/                # title and description shown by the plugin manager (zh / en)
+├─ locale/                # title and description shown by the plugin manager (8 languages)
 ├─ icon.svg               # plugin icon
 ├─ build.mjs              # inlines src/theme.css into lib/client.js
 ├─ install.mjs            # local-link install/uninstall script (cross-platform, Node stdlib only)

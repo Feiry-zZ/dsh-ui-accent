@@ -56,8 +56,8 @@ assert(exportsField['./icon'] !== undefined, 'exports 缺少 ./icon')
 assert(exportsField['./cordis.patch.yml'] !== undefined, 'exports 缺少 ./cordis.patch.yml')
 assert(exportsField['./client'] !== undefined, 'exports 缺少 ./client')
 
-// 6. 两种语言的展示元数据都要有标题与描述。
-for (const lang of ['zh', 'en']) {
+// 6. 每种 DSH 语言的展示元数据都要有标题与描述（插件管理按当前语言读取）。
+for (const lang of ['zh', 'en', 'ja', 'es', 'fr', 'de', 'ru', 'pt']) {
   const locale = readJson(join('locale', `${lang}.json`))
   assert(typeof locale.meta?.title === 'string' && locale.meta.title.length > 0, `locale/${lang}.json 缺少 meta.title`)
   assert(

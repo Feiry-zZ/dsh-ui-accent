@@ -123,12 +123,28 @@ if (!text.includes('原色')) throw new Error('思考行缺少“原色”标记
 if (!text.includes('链接蓝')) throw new Error('行内代码缺少“链接蓝”标记')
 if (!text.includes('效果预览（全部设置）')) throw new Error('预览标题未列举全部设置')
 
-// 中英文字典键集必须一致，避免切换语言后出现裸键。
+// 全部语言的字典键集必须一致，避免切换语言后出现裸键或漏翻。
+const EXPECTED_LOCALES = ['de', 'en', 'es', 'fr', 'ja', 'pt', 'ru', 'zh']
+const actualLocales = Object.keys(exports.DICTS).sort()
+if (JSON.stringify(actualLocales) !== JSON.stringify(EXPECTED_LOCALES)) {
+  throw new Error('语言集合与 DSH 不一致: ' + actualLocales.join(','))
+}
 const zhKeys = Object.keys(exports.DICTS.zh).sort()
-const enKeys = Object.keys(exports.DICTS.en).sort()
-if (JSON.stringify(zhKeys) !== JSON.stringify(enKeys)) throw new Error('中英文字典键集不一致')
-for (const key of zhKeys) {
-  if (!exports.DICTS.zh[key] || !exports.DICTS.en[key]) throw new Error('字典存在空文案: ' + key)
+for (const locale of EXPECTED_LOCALES) {
+  const keys = Object.keys(exports.DICTS[locale]).sort()
+  if (JSON.stringify(keys) !== JSON.stringify(zhKeys)) {
+    throw new Error(`${locale} 字典键集与 zh 不一致`)
+  }
+  for (const key of keys) {
+    const value = exports.DICTS[locale][key]
+    if (typeof value !== 'string' || value.trim() === '') {
+      throw new Error(`${locale} 字典存在空文案: ${key}`)
+    }
+    // 零宽空格与 BOM 会污染界面，DSH 的 i18n 检查同样禁止。
+    if (/[\u200B\uFEFF]/.test(value)) {
+      throw new Error(`${locale} 字典含零宽字符: ${key}`)
+    }
+  }
 }
 
 // 英文渲染：所有分类与按钮都应显示英文文案。
@@ -156,6 +172,22 @@ for (const label of [
   'Link blue'
 ]) {
   if (!enText.includes(label)) throw new Error('英文面板缺少文案: ' + label)
+}
+
+// 其他语言抽查：确认面板确实按当前语言渲染，而不是回落到中文。
+const localeSpotChecks = {
+  ja: ['アクセントカラー', 'ツール行', 'その他のツール', 'すべて既定に戻す'],
+  es: ['Colores de acento', 'Filas de herramientas', 'Otras herramientas', 'Restablecer todo'],
+  fr: ['Couleurs d’accent', 'Lignes d’outils', 'Autres outils', 'Tout réinitialiser'],
+  de: ['Akzentfarben', 'Werkzeugzeilen', 'Andere Werkzeuge', 'Alles zurücksetzen'],
+  ru: ['Акцентные цвета', 'Строки инструментов', 'Другие инструменты', 'Сбросить всё'],
+  pt: ['Cores de destaque', 'Linhas de ferramentas', 'Outras ferramentas', 'Restaurar tudo']
+}
+for (const [locale, labels] of Object.entries(localeSpotChecks)) {
+  const rendered = renderText(exports.AccentSection({ t: (key) => exports.DICTS[locale][key] ?? key }))
+  for (const label of labels) {
+    if (!rendered.includes(label)) throw new Error(`${locale} 面板缺少文案: ${label}`)
+  }
 }
 
 // 新的出厂默认：思考与行内代码不覆盖（null），技能沿用橙色，其他工具浅烟紫。
@@ -191,8 +223,15 @@ const fakeCtx = {
     disposers.push(factory())
   },
   locale: {
-    register(ns, locale, dict) {
-      dictionaryRegistrations.push({ ns, locale, dict })
+    // 官方签名 register(ns, { zh, en, ... })；这里拆成逐语言记录，便于断言。
+    register(ns, localeOrDicts, maybeDict) {
+      if (typeof localeOrDicts === 'string') {
+        dictionaryRegistrations.push({ ns, locale: localeOrDicts, dict: maybeDict })
+        return () => {}
+      }
+      for (const [locale, dict] of Object.entries(localeOrDicts)) {
+        dictionaryRegistrations.push({ ns, locale, dict })
+      }
       return () => {}
     },
     bind() {
@@ -215,8 +254,14 @@ if (styleTags.length !== 1) throw new Error('样式表未注入')
 if (!String(styleTags[0].cssText).includes("[data-tool='ask_user_question']")) {
   throw new Error('样式表内容不完整')
 }
-if (dictionaryRegistrations.length !== 2) throw new Error('中英文字典未各注册一次')
+if (dictionaryRegistrations.length !== EXPECTED_LOCALES.length) {
+  throw new Error(`字典注册数量不对：${dictionaryRegistrations.length}`)
+}
 if (dictionaryRegistrations[0].ns !== exports.SETTINGS_NS) throw new Error('字典命名空间不正确')
+const registeredLocales = dictionaryRegistrations.map((entry) => entry.locale).sort()
+if (JSON.stringify(registeredLocales) !== JSON.stringify(EXPECTED_LOCALES)) {
+  throw new Error('注册的字典语言不全: ' + registeredLocales.join(','))
+}
 if (registrations.length !== 1) throw new Error('设置页未注册')
 if (registrations[0].options.id !== 'accent' || registrations[0].options.name !== 'settings.section') {
   throw new Error('设置页注册参数不正确')
