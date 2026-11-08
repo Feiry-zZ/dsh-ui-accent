@@ -59,7 +59,8 @@ const VOID_TAGS = new Set(['input', 'img', 'br', 'hr', 'meta', 'link'])
 function renderTag(tag, props, childrenHtml) {
   const attributes = []
   for (const key of Object.keys(props)) {
-    if (key === 'children') {
+    // React 专用字段不进 HTML；ref 是对象，写成属性会变成 [object Object]。
+    if (key === 'children' || key === 'ref' || key === 'key') {
       continue
     }
     const value = props[key]

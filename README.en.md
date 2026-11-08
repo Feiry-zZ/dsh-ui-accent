@@ -2,22 +2,22 @@
 
 English | [简体中文](./README.md)
 
-Colorize the conversation area of DeepSeek Harness (DSH) by meaning, then pick every color in **Settings → Accent colors**. Changes apply instantly and are stored in your browser (`localStorage`) — never in `settings.yaml`.
+Colorize the conversation area of DeepSeek Harness (DSH) by meaning, then pick every color in **Settings → Accent colors**. Changes preview live inside the panel; press **Apply** to write them to the conversation and store them in your browser (`localStorage`) — never in `settings.yaml`.
 
 The plugin ships as a **DSH bundle** on npm: `@feiry-zz/dsh-ui-accent`. Install it by package name from the DSH plugin manager — on Windows, macOS and Linux alike.
 
-The panel follows the DSH locale setting (all 8 languages DSH ships, via the `locale` service), and its live preview lists all 15 categories inside a fixed-height scroll area.
+The panel follows the DSH locale setting (all 8 languages DSH ships, via the `locale` service); its live preview lists all 15 categories inside a fixed-height scroll area, with a permanent **Apply** button in the header row.
 
 ![Effect preview](./preview/preview-en.png)
 
-Settings panel: the preview box is 220px tall and sticks to the top of the content area, so it stays visible while you scroll through the rows below; a new color is immediately comparable.
+Settings panel: the preview box is 220px tall and sticks to the top of the content area, so it stays visible while you scroll through the rows below; a new color is immediately comparable, and the conversation updates only after you press **Apply**.
 
 ![Settings panel](./preview/panel-en.png)
 
 ## Features
 
 - **Color by meaning**: result titles (Markdown headings), bold text, inline code, thinking, questions, plus 10 tool categories — run command, edit, write, read, search, code, task, skill, plugin and other tools (15 in total).
-- **Smooth dragging**: while you drag the color picker, changes are coalesced into one CSS variable write per frame and only the changed variable is touched; persistence and preview scrolling wait until you pause, so the picker stays responsive.
+- **Preview first, apply explicitly**: dragging the picker only updates the live preview inside the panel — no root style writes, no persistence. An **Apply** button stays in the preview header, becomes enabled as soon as anything differs, and writes only the changed categories to the conversation and storage when clicked. Dragging triggers zero full-document restyles, so long conversations stay smooth.
 - **Follows the DSH locale**: registers the `settings.uiAccent` namespace on the DSH `locale` service for all 8 languages DSH ships — Chinese, English, 日本語, Español, Français, Deutsch, Русский, Português; the panel and the sidebar entry update as soon as you switch.
 - **Evolving defaults**: storage keeps only values that differ from the built-in defaults, so untouched categories pick up a new default automatically.
 - **Theme aware**: thinking and inline code are not overridden by default — they keep the DSH grey and the link blue, and follow light/dark themes.
@@ -42,7 +42,7 @@ Settings panel: the preview box is 220px tall and sticks to the top of the conte
 | Plugin | `cordis_*` tools | `#818cf8` blue-violet |
 | Other tools | Anything not listed above | `#ded7e5` light lavender |
 
-Every category can be changed independently, and **Reset all** restores the defaults. Two categories are special:
+Every category can be changed independently, and **Reset all** restores the defaults. Both only change the panel preview; press **Apply** to write them to the conversation and storage. Two categories are special:
 
 - **Inline code** defaults to the *link blue*: it reuses the `--dsw-alias-state-business-primary` token (`#679efe` in dark, `#4176e6` in light), so plain inline code, link-style inline code and file references all render in the same blue that follows the theme. Pick a color to override it; **Default** returns to link blue.
 - **Thinking** defaults to the *original* color: nothing is overridden, so it keeps the DSH theme grey. Pick a color to override it; **Default** returns to the original.
@@ -50,10 +50,12 @@ Every category can be changed independently, and **Reset all** restores the defa
 ## Usage
 
 1. Open **Settings** in DSH — **Accent colors** appears in the left navigation.
-2. Click a color swatch or type a hex value; the conversation area updates immediately.
-3. Choices are stored in the browser's `localStorage`. Inline code keeps following the theme's link blue by default; other custom colors stay fixed when you switch light/dark themes.
-4. The **Preview (all settings)** box at the top of the panel lists all 15 categories, scrolls within 220px, and **sticks to the top** of the settings content area.
-5. After you pick a color, the preview scrolls to that category's sample row so you can compare right away.
+2. Click a color swatch or type a hex value; the change only updates the **Preview** inside the panel, while the conversation stays as it is.
+3. The **Apply** button in the preview header becomes available as soon as anything changes; clicking it writes the changed categories to the conversation and stores them in the browser's `localStorage`.
+4. Inline code keeps following the theme's link blue by default; other custom colors stay fixed when you switch light/dark themes.
+5. The **Preview (all settings)** box at the top of the panel lists all 15 categories, scrolls within 220px, and **sticks to the top** of the settings content area, so the preview and the **Apply** button stay visible while you scroll.
+6. After you pick a color, the preview scrolls to that category's sample row so you can compare right away.
+7. Closing the settings panel discards changes you have not applied; the next time you open it, editing starts from the currently applied colors.
 
 > If **Accent colors** does not show up in Settings yet, refresh the window once (`Ctrl+R`).
 
@@ -141,7 +143,7 @@ rm ~/.dsh/profiles/desktop/node_modules/@feiry-zz/dsh-ui-accent
 rmdir "%USERPROFILE%\.dsh\profiles\desktop\node_modules\@feiry-zz\dsh-ui-accent"
 ```
 
-Picked colors live in the browser's `localStorage` and survive uninstall; they come back on reinstall.
+Applied colors live in the browser's `localStorage` and survive uninstall; they come back on reinstall.
 
 ## License
 

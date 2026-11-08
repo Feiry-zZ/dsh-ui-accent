@@ -3,16 +3,18 @@ import { fileURLToPath } from 'node:url'
 
 /**
  * 本地自测：不依赖浏览器与 React 运行时，验证 client bundle 的工厂函数、
- * 设置面板结构、配色写入与持久化行为。
+ * 设置面板结构、暂存/应用行为、预览作用域与持久化。
  * React 只作为最小替身注入，重点校验我们自己的逻辑。
  */
 
 /** 假的 localStorage，用于断言持久化行为。 */
 const storage = new Map()
-/** 记录写入根元素 CSS 变量的键值。 */
+/** 根元素 CSS 变量。 */
 const cssVariables = new Map()
-/** 记录根元素属性。 */
+/** 根元素属性。 */
 const rootAttributes = new Map()
+/** 记录被注入的 style 标签，便于确认样式随插件生命周期挂载。 */
+const styleTags = []
 
 globalThis.window = {
   localStorage: {
@@ -26,9 +28,6 @@ globalThis.window = {
     }
   }
 }
-
-/** 记录被注入的 style 标签，便于确认样式随插件生命周期挂载。 */
-const styleTags = []
 
 globalThis.document = {
   documentElement: {
@@ -96,6 +95,37 @@ function renderText(node) {
   return renderText(node.props?.children)
 }
 
+/**
+ * 遍历元素树并按条件收集元素。
+ * @param node - React 元素、数组或字符串。
+ * @param predicate - 命中条件。
+ * @param out - 收集结果。
+ * @returns 命中的元素列表。
+ */
+function collectElements(node, predicate, out = []) {
+  if (node === null || node === undefined || typeof node === 'boolean') return out
+  if (Array.isArray(node)) {
+    for (const item of node) collectElements(item, predicate, out)
+    return out
+  }
+  if (typeof node !== 'object') return out
+  if (typeof node.type === 'function') {
+    collectElements(node.type(node.props), predicate, out)
+    return out
+  }
+  if (predicate(node)) out.push(node)
+  collectElements(node.props?.children, predicate, out)
+  return out
+}
+
+/** 在面板树里找「应用」按钮。 */
+function findApplyButton(tree) {
+  return collectElements(
+    tree,
+    (element) => typeof element.props?.className === 'string' && element.props.className.includes('dsh-accent-apply')
+  )[0]
+}
+
 const text = renderText(exports.AccentSection())
 for (const label of [
   '界面配色',
@@ -115,7 +145,8 @@ for (const label of [
   '技能',
   '插件',
   '其他工具',
-  '全部恢复默认'
+  '全部恢复默认',
+  '应用'
 ]) {
   if (!text.includes(label)) throw new Error('设置面板缺少文案: ' + label)
 }
@@ -147,7 +178,7 @@ for (const locale of EXPECTED_LOCALES) {
   }
 }
 
-// 英文渲染：所有分类与按钮都应显示英文文案。
+// 英文渲染：所有分类、按钮与未应用提示都应显示英文文案。
 const enText = renderText(exports.AccentSection({ t: (key) => exports.DICTS.en[key] ?? key }))
 for (const label of [
   'Accent colors',
@@ -168,6 +199,7 @@ for (const label of [
   'Plugin',
   'Other tools',
   'Reset all',
+  'Apply',
   'Original',
   'Link blue'
 ]) {
@@ -176,12 +208,12 @@ for (const label of [
 
 // 其他语言抽查：确认面板确实按当前语言渲染，而不是回落到中文。
 const localeSpotChecks = {
-  ja: ['アクセントカラー', 'ツール行', 'その他のツール', 'すべて既定に戻す'],
-  es: ['Colores de acento', 'Filas de herramientas', 'Otras herramientas', 'Restablecer todo'],
-  fr: ['Couleurs d’accent', 'Lignes d’outils', 'Autres outils', 'Tout réinitialiser'],
-  de: ['Akzentfarben', 'Werkzeugzeilen', 'Andere Werkzeuge', 'Alles zurücksetzen'],
-  ru: ['Акцентные цвета', 'Строки инструментов', 'Другие инструменты', 'Сбросить всё'],
-  pt: ['Cores de destaque', 'Linhas de ferramentas', 'Outras ferramentas', 'Restaurar tudo']
+  ja: ['アクセントカラー', 'ツール行', 'その他のツール', 'すべて既定に戻す', '適用'],
+  es: ['Colores de acento', 'Filas de herramientas', 'Otras herramientas', 'Restablecer todo', 'Aplicar'],
+  fr: ['Couleurs d’accent', 'Lignes d’outils', 'Autres outils', 'Tout réinitialiser', 'Appliquer'],
+  de: ['Akzentfarben', 'Werkzeugzeilen', 'Andere Werkzeuge', 'Alles zurücksetzen', 'Anwenden'],
+  ru: ['Акцентные цвета', 'Строки инструментов', 'Другие инструменты', 'Сбросить всё', 'Применить'],
+  pt: ['Cores de destaque', 'Linhas de ferramentas', 'Outras ferramentas', 'Restaurar tudo', 'Aplicar']
 }
 for (const [locale, labels] of Object.entries(localeSpotChecks)) {
   const rendered = renderText(exports.AccentSection({ t: (key) => exports.DICTS[locale][key] ?? key }))
@@ -190,6 +222,13 @@ for (const [locale, labels] of Object.entries(localeSpotChecks)) {
   }
 }
 
+// 初始状态：应用按钮常驻但禁用，且没有未应用播报。
+const initialTree = exports.AccentSection()
+const initialButton = findApplyButton(initialTree)
+if (initialButton === undefined) throw new Error('预览标题行缺少应用按钮')
+if (initialButton.props.disabled !== true) throw new Error('无改动时应用按钮应为禁用状态')
+if (renderText(initialTree).includes('有未应用的配色更改')) throw new Error('无改动时不应播报未应用状态')
+
 // 新的出厂默认：思考与行内代码不覆盖（null），技能沿用橙色，其他工具浅烟紫。
 if (exports.getColors().think !== null) throw new Error('思考默认应为不覆盖')
 if (exports.getColors().inlineCode !== null) throw new Error('行内代码默认应为不覆盖')
@@ -197,24 +236,143 @@ if (exports.getColors().skill !== '#fb923c') throw new Error('技能默认色应
 if (exports.getColors().bash !== '#b0cef2') throw new Error('运行命令默认色应为 #b0cef2')
 if (exports.getColors().other !== '#ded7e5') throw new Error('其他工具默认色应为 #ded7e5')
 
-// 写入合法颜色应更新 CSS 变量并持久化。
+// 修改只进 draft：不写根变量、不落盘，但按钮变为可用并播报未应用。
 exports.setColor('heading', '#123456')
-if (cssVariables.get('--dsh-accent-heading') !== '#123456') throw new Error('CSS 变量未更新')
+if (exports.getColors().heading !== '#123456') throw new Error('待应用配色未更新')
+if (exports.getAppliedColors().heading !== '#c084fc') throw new Error('修改不应影响已应用配色')
+if (cssVariables.has('--dsh-accent-heading')) throw new Error('修改不应写入根变量')
+if (storage.has('dsh-accent.colors.v3')) throw new Error('修改不应落盘')
+const dirtyTree = exports.AccentSection()
+const dirtyButton = findApplyButton(dirtyTree)
+if (dirtyButton.props.disabled !== false) throw new Error('有改动时应用按钮应启用')
+if (!renderText(dirtyTree).includes('有未应用的配色更改')) throw new Error('有改动时应播报未应用状态')
+
+// 点应用：写入差异键一次并落盘；按钮回到禁用，播报消失。
+const appliedKeys = exports.applyDraft()
+if (appliedKeys.length !== 1 || appliedKeys[0] !== 'heading') {
+  throw new Error('应用差异键不正确: ' + JSON.stringify(appliedKeys))
+}
+if (cssVariables.get('--dsh-accent-heading') !== '#123456') throw new Error('应用后 CSS 变量未更新')
 const savedEnvelope = JSON.parse(storage.get('dsh-accent.colors.v3'))
 if (savedEnvelope.version !== 3 || savedEnvelope.colors.heading !== '#123456') throw new Error('颜色未持久化')
 // v3 只落盘改过的分类，默认色不写入，否则以后调整默认色会被旧值挡住。
 if (savedEnvelope.colors.other !== undefined) throw new Error('默认色不应写入存储')
-if (storage.has('dsh-accent.colors.v2')) throw new Error('旧存储键未清理')
+if (exports.dirtyKeys().length !== 0) throw new Error('应用后不应再有未应用键')
+const cleanTree = exports.AccentSection()
+if (findApplyButton(cleanTree).props.disabled !== true) throw new Error('应用后按钮应回到禁用')
+if (renderText(cleanTree).includes('有未应用的配色更改')) throw new Error('应用后不应再播报未应用状态')
 
-// 非法颜色被忽略。
+// 非法颜色被忽略，不影响 draft 与已应用配色。
 exports.setColor('heading', 'red')
 if (exports.getColors().heading !== '#123456') throw new Error('非法颜色未被忽略')
 
-// 恢复默认后回到默认紫色。
-exports.resetColors()
-if (exports.getColors().heading !== '#c084fc') throw new Error('重置未恢复默认色')
+// 订阅者必须收到新对象：应用后 applied 变了，如果传旧引用 React 会跳过重渲染，按钮不会复位。
+const seenColors = []
+const unsubscribeColors = exports.subscribeColors((colors) => seenColors.push(colors))
+exports.setColor('strong', '#654321')
+exports.applyDraft()
+if (seenColors[seenColors.length - 1] === seenColors[seenColors.length - 2]) {
+  throw new Error('应用后应发出新的配色对象，否则面板不会重渲染')
+}
+unsubscribeColors()
 
-// 模拟客户端上下文执行 apply：样式表应注入、字典应注册、设置页应完成注册且不抛错。
+// 全部恢复默认也只改 draft；应用后回到默认并把存储里的自定义项清掉。
+exports.resetColors()
+if (exports.getColors().heading !== '#c084fc') throw new Error('重置未改回默认色')
+if (cssVariables.get('--dsh-accent-heading') !== '#123456') throw new Error('重置不应立即写根变量')
+exports.applyDraft()
+if (cssVariables.get('--dsh-accent-heading') !== '#c084fc') throw new Error('应用重置后变量未更新')
+if (JSON.parse(storage.get('dsh-accent.colors.v3')).colors.heading !== undefined) {
+  throw new Error('恢复默认后不应把默认色写进存储')
+}
+
+// 行内代码默认不写变量；应用覆盖后写入，应用 null 后清除。
+if (cssVariables.has('--dsh-accent-inline-code')) throw new Error('行内代码默认不应写入覆盖变量')
+exports.setColor('inlineCode', '#4176e6')
+if (cssVariables.has('--dsh-accent-inline-code')) throw new Error('修改行内代码不应立即写根变量')
+exports.applyDraft()
+if (cssVariables.get('--dsh-accent-inline-code') !== '#4176e6') throw new Error('应用后行内代码变量未写入')
+exports.setColor('inlineCode', null)
+exports.applyDraft()
+if (cssVariables.has('--dsh-accent-inline-code')) throw new Error('行内代码恢复默认后变量未清除')
+
+// 思考：修改只进 draft；应用后写入变量与开关，应用 null 后两者都被清除。
+exports.setColor('think', '#fb923c')
+if (cssVariables.has('--dsh-accent-think')) throw new Error('修改思考不应立即写根变量')
+if (rootAttributes.has('data-dsh-accent-think')) throw new Error('修改思考不应立即打开开关')
+exports.applyDraft()
+if (cssVariables.get('--dsh-accent-think') !== '#fb923c') throw new Error('应用后思考变量未写入')
+if (!rootAttributes.has('data-dsh-accent-think')) throw new Error('应用后思考开关未打开')
+exports.setColor('think', null)
+exports.applyDraft()
+if (cssVariables.has('--dsh-accent-think')) throw new Error('思考恢复默认后变量未清除')
+if (rootAttributes.has('data-dsh-accent-think')) throw new Error('思考恢复默认后开关未关闭')
+
+// 面板作用域：draft 变量只写面板节点，根元素保持已应用值。
+const scopeWrites = []
+const scope = {
+  style: {
+    setProperty: (name, value) => scopeWrites.push({ name, value }),
+    removeProperty: (name) => scopeWrites.push({ name, value: null })
+  }
+}
+exports.beginDraft()
+exports.setPreviewScope(scope)
+scopeWrites.length = 0
+exports.setColor('bash', '#111111')
+if (cssVariables.has('--dsh-accent-bash')) throw new Error('预览取色不应改动根变量')
+const scopedBash = scopeWrites.filter((write) => write.name === '--dsh-accent-bash')
+if (scopedBash.length !== 1 || scopedBash[0].value !== '#111111') {
+  throw new Error('预览取色应写面板作用域: ' + JSON.stringify(scopeWrites))
+}
+exports.applyDraft()
+if (cssVariables.get('--dsh-accent-bash') !== '#111111') throw new Error('应用后根变量未更新')
+
+// 关闭面板：丢弃未应用的 draft，回到已应用配色。
+exports.setColor('edit', '#000000')
+if (exports.dirtyKeys().length !== 1) throw new Error('修改后应产生未应用键')
+exports.discardDraft()
+if (exports.getColors().edit !== '#fbbf24') throw new Error('关闭面板后 draft 应回到已应用配色')
+if (exports.dirtyKeys().length !== 0) throw new Error('丢弃后不应再有未应用键')
+exports.setPreviewScope(null)
+
+// 三位十六进制归一化为六位，色块与 draft 都不再见到三位写法。
+if (exports.sanitizeColor('#ABC') !== '#aabbcc') throw new Error('三位十六进制未归一化')
+exports.setColor('heading', '#ABC')
+if (exports.getColors().heading !== '#aabbcc') throw new Error('三位十六进制未写入 draft')
+
+// 样式表应包含所有分类钩子、应用按钮与无障碍状态文本。
+const css = readFileSync(fileURLToPath(new URL('../src/theme.css', import.meta.url)), 'utf8')
+for (const selector of [
+  "[class*='_markdown'] :is(h1",
+  "[class*='_markdown'] :is(strong",
+  "[class*='_markdown'] :not(pre) > code",
+  "html[data-dsh-accent-think] [data-variant='think']",
+  "[data-tool='ask_user_question']",
+  "[data-tool='bash']",
+  "[data-tool='edit']",
+  "[data-tool='write']",
+  "[data-tool='read']",
+  "[data-tool='grep']",
+  "[data-tool='run_code']",
+  "[data-tool='todo_write']",
+  "[data-tool='skill']",
+  "[data-tool^='cordis_']"
+]) {
+  if (!css.includes(selector)) throw new Error('样式表缺少选择器: ' + selector)
+}
+for (const fragment of [
+  '.dsh-accent-apply',
+  '.dsh-accent-apply:disabled',
+  '.dsh-accent-preview-actions',
+  '.dsh-accent-sr-only',
+  'max-height: 220px',
+  'position: sticky'
+]) {
+  if (!css.includes(fragment)) throw new Error('样式表缺少应用按钮/预览规则: ' + fragment)
+}
+
+// 模拟客户端上下文执行 apply：样式表应注入、字典应注册、设置页应注册且不抛错。
 const registrations = []
 const disposers = []
 const dictionaryRegistrations = []
@@ -271,56 +429,10 @@ if (typeof registrations[0].options.label !== 'function') throw new Error('设�
 if (typeof registrations[0].Component !== 'function') throw new Error('设置页组件不是函数组件')
 if (typeof disposers[0] !== 'function') throw new Error('样式清理函数缺失')
 
-// 思考默认不写变量、不带开关属性，页面保持 DSH 原色。
-if (cssVariables.has('--dsh-accent-think')) throw new Error('思考默认不应写入覆盖变量')
+// 启动恢复：apply 把已应用配色整表写回根元素，并打上接管标记。
+if (rootAttributes.get('data-dsh-accent') !== 'on') throw new Error('启动时未标记配色接管')
+if (cssVariables.get('--dsh-accent-bash') !== '#111111') throw new Error('启动时未恢复已应用配色')
 if (rootAttributes.has('data-dsh-accent-think')) throw new Error('思考默认不应打开覆盖开关')
 
-// 行内代码默认不写变量，样式表回落到超链接蓝。
-if (cssVariables.has('--dsh-accent-inline-code')) throw new Error('行内代码默认不应写入覆盖变量')
-exports.setColor('inlineCode', '#4176e6')
-if (cssVariables.get('--dsh-accent-inline-code') !== '#4176e6') throw new Error('行内代码取色未写入变量')
-exports.setColor('inlineCode', null)
-if (cssVariables.has('--dsh-accent-inline-code')) throw new Error('行内代码恢复默认后变量未清除')
-
-// 给思考显式取色后写入变量与开关；恢复默认后两者都被清除。
-exports.setColor('think', '#fb923c')
-if (cssVariables.get('--dsh-accent-think') !== '#fb923c') throw new Error('思考取色未写入变量')
-if (!rootAttributes.has('data-dsh-accent-think')) throw new Error('思考取色未打开开关')
-exports.setColor('think', null)
-if (cssVariables.has('--dsh-accent-think')) throw new Error('思考恢复默认后变量未清除')
-if (rootAttributes.has('data-dsh-accent-think')) throw new Error('思考恢复默认后开关未关闭')
-
-// 拖动取色（live）：变量与面板立即更新，但存储延后到停顿后，避免逐事件写盘。
-exports.setColor('bash', '#111111', { live: true })
-if (cssVariables.get('--dsh-accent-bash') !== '#111111') throw new Error('拖动取色未即时写入变量')
-if (JSON.parse(storage.get('dsh-accent.colors.v3')).colors.bash !== undefined) throw new Error('拖动取色不应立即落盘')
-exports.flushPending()
-if (JSON.parse(storage.get('dsh-accent.colors.v3')).colors.bash !== '#111111') throw new Error('取色停顿后未落盘')
-
-// 样式表应包含所有分类钩子。
-const css = readFileSync(fileURLToPath(new URL('../src/theme.css', import.meta.url)), 'utf8')
-for (const selector of [
-  "[class*='_markdown'] :is(h1",
-  "[class*='_markdown'] :is(strong",
-  "[class*='_markdown'] :not(pre) > code",
-  "html[data-dsh-accent-think] [data-variant='think']",
-  "[data-tool='ask_user_question']",
-  "[data-tool='bash']",
-  "[data-tool='edit']",
-  "[data-tool='write']",
-  "[data-tool='read']",
-  "[data-tool='grep']",
-  "[data-tool='run_code']",
-  "[data-tool='todo_write']",
-  "[data-tool='skill']",
-  "[data-tool^='cordis_']"
-]) {
-  if (!css.includes(selector)) throw new Error('样式表缺少选择器: ' + selector)
-}
-// 预览区必须可滚动，否则列举全部设置会撑长设置页。
-if (!css.includes('max-height: 220px')) throw new Error('预览区缺少滚动高度限制')
-// 预览区必须粘在顶部，配置项滚动时保持可见。
-if (!css.includes('position: sticky')) throw new Error('预览区缺少粘性定位')
-
-console.log('OK: 工厂函数、面板结构、颜色写入与持久化均通过')
+console.log('OK: 工厂函数、面板结构、暂存/应用、预览作用域与持久化均通过')
 console.log('面板文本长度:', text.length)

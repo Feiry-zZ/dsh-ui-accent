@@ -55,10 +55,10 @@ npm test                       # 5 个自测，必须全绿
 
 | 测试 | 守住什么 |
 | --- | --- |
-| `render-test.mjs` | 面板结构、样式注入、颜色写入与持久化；8 套字典键集与 `zh` 完全一致、无空文案与零宽字符 |
+| `render-test.mjs` | 面板结构、应用按钮启用/禁用、暂存与应用、预览作用域、样式注入与持久化；8 套字典键集与 `zh` 完全一致、无空文案与零宽字符 |
 | `migration-test.mjs` | `v1 → v3` 存储迁移 |
 | `stale-default-test.mjs` | 默认色升级：旧默认不算用户选择，自定义色保留 |
-| `schedule-test.mjs` | 拖动取色每帧只写一次 CSS 变量、落盘延后 |
+| `schedule-test.mjs` | 拖动只写面板作用域（根写入为 0）、应用一次写差异键、关闭丢弃 draft |
 | `package-test.mjs` | 组合包打包契约（`dsh.bundle.patch` / `files` / `exports` / `locale` / `icon` / `prepublishOnly`） |
 
 测试用 React stub 渲染组件，**不要为了测试引入 react / react-dom**（版本容易冲突）。
@@ -83,6 +83,7 @@ npm test                       # 5 个自测，必须全绿
 ## 7. 存储与迁移
 
 - 存储键 `dsh-accent.colors.v3`，结构 `{ version: 3, colors: {...} }`，**只保存与出厂默认不同的项**（delta-only）。
+- **只落盘已应用配色**（`applied`）；面板里正在编辑的 `draft` 不写存储，关闭面板即丢弃。
 - 旧信封 `v2` 与扁平 `v1` 在首次加载时迁移；与历史默认相同的值视为「没改过」。
 - **改默认色时**：把旧默认登记进 `STALE_DEFAULTS`，否则老用户存下的旧默认会盖住新默认（历史上「其他工具」就这么踩过一次）。
 - 迁移链与 stale 逻辑由 `migration-test` / `stale-default-test` 守着，改了行为就补用例。
@@ -93,10 +94,11 @@ npm test                       # 5 个自测，必须全绿
 
 ## 9. 性能红线
 
-- 取色器的 `input` 事件里**禁止**同步布局查询（`offsetTop`、`getBoundingClientRect`、`scrollTo`）或写 `localStorage`。
-- 颜色变化走 `scheduleVisual`：`requestAnimationFrame` 合并，每帧只写**变化的那一个** CSS 变量。
-- 落盘与预览自动滚动走 `scheduleSettle`：取色停顿约 160ms 后才执行。
-- `schedule-test.mjs` 断言「每帧一次写 + 落盘延后」，不要绕过它直接调 `applyColors` / `localStorage.setItem`。
+- 取色器的 `input` 事件里**禁止**同步布局查询（`offsetTop`、`getBoundingClientRect`、`scrollTo`）、写 `localStorage` 或写页面根元素。
+- 交互（拖动、十六进制输入、恢复默认）只改 `draft` 与面板作用域变量（`setPreviewScope` / `applyDraftToScope`）；根元素 `--dsh-accent-*` **只能**由启动恢复或用户点击「应用」触发的 `applyDraft()` 写入。
+- `applyDraft()` 必须在一次任务内写完所有差异键，让浏览器只做一次全文档重算；不要在事件里逐个分类写根。
+- 预览自动滚动走 `schedulePreviewReveal`：取色停顿约 160ms 后才查布局并滚动。
+- `schedule-test.mjs` 断言「拖动零根写入 + 应用一次写差异键 + 关闭丢弃 draft」，`render-test.mjs` 断言应用按钮状态与预览作用域；不要绕过它们直接调 `applyColors` / `localStorage.setItem`。
 
 ## 10. 文档约定
 

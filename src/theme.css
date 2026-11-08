@@ -254,6 +254,8 @@ html[data-dsh-accent-think] [data-variant='think'] :is([class*='_title'], [class
   color: var(--dsw-alias-label-secondary, #61666b);
   font-size: 12px;
   line-height: 26px;
+  white-space: nowrap;
+  flex: none;
   cursor: pointer;
 }
 
@@ -279,9 +281,72 @@ html[data-dsh-accent-think] [data-variant='think'] :is([class*='_title'], [class
 }
 
 .dsh-accent-preview-head {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 8px;
   color: var(--dsw-alias-label-tertiary, #81858c);
   font-size: 11px;
   line-height: 16px;
+}
+
+.dsh-accent-preview-title {
+  min-width: 0;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+/* 应用按钮固定占位：禁用时只降不透明度，不隐藏，避免标题行左右抖动。 */
+.dsh-accent-preview-actions {
+  display: flex;
+  align-items: center;
+  justify-content: flex-end;
+  gap: 8px;
+  flex: none;
+  min-width: 64px;
+}
+
+.dsh-accent-apply {
+  height: 26px;
+  padding: 0 12px;
+  border: 1px solid transparent;
+  border-radius: 8px;
+  background: var(--dsw-alias-state-business-primary, #4176e6);
+  color: #fff;
+  font: inherit;
+  font-size: 12px;
+  font-weight: 500;
+  line-height: 24px;
+  white-space: nowrap;
+  cursor: pointer;
+}
+
+.dsh-accent-apply:disabled {
+  opacity: 0.45;
+  cursor: default;
+}
+
+.dsh-accent-apply:not(:disabled):hover {
+  filter: brightness(1.08);
+}
+
+.dsh-accent-apply:focus-visible {
+  outline: 2px solid var(--dsw-alias-state-business-primary, #4176e6);
+  outline-offset: 2px;
+}
+
+/* 仅供辅助技术读取的状态文本：视觉上隐藏，仍参与 aria-live 播报。 */
+.dsh-accent-sr-only {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  padding: 0;
+  margin: -1px;
+  overflow: hidden;
+  clip: rect(0 0 0 0);
+  white-space: nowrap;
+  border: 0;
 }
 
 .dsh-accent-preview-body {

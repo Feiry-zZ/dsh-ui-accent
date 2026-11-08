@@ -134,7 +134,7 @@ window.__ModuleLoader__.load({
     const zh = {
       nav: '界面配色',
       title: '界面配色',
-      desc: '为结果标题、加粗文字、行内代码、思考、提问以及各类工具行单独取色；修改即时生效，并保存在本机浏览器。',
+      desc: '为结果标题、加粗文字、行内代码、思考、提问以及各类工具行单独取色；面板内实时预览，点「应用」后写入会话并保存在本机浏览器。',
       'group.text.title': '结果与强调文字',
       'group.text.desc': '助手回复中的 Markdown 标题、加粗与行内代码。',
       'group.rows.title': '会话行',
@@ -175,7 +175,10 @@ window.__ModuleLoader__.load({
       'item.other.hint': '未单独列出的工具',
       'button.default': '默认',
       'button.resetAll': '全部恢复默认',
-      'footer.hint': '配色保存在浏览器 localStorage，不写入 settings.yaml。',
+      'button.apply': '应用',
+      'apply.aria': '应用配色',
+      'apply.pending': '有未应用的配色更改',
+      'footer.hint': '配色在点「应用」后写入会话并保存在浏览器 localStorage，不写入 settings.yaml。',
       'hex.aria': '十六进制颜色',
       'swatch.ariaSuffix': '颜色',
       'preview.title': '效果预览（全部设置）',
@@ -202,7 +205,7 @@ window.__ModuleLoader__.load({
     const en = {
       nav: 'Accent colors',
       title: 'Accent colors',
-      desc: 'Pick colors for result titles, bold text, inline code, thinking, questions and every tool row. Changes apply instantly and are saved in this browser.',
+      desc: 'Pick colors for result titles, bold text, inline code, thinking, questions and every tool row. Preview inside the panel, then press Apply to update the conversation and save in this browser.',
       'group.text.title': 'Results & emphasis',
       'group.text.desc': 'Markdown headings, bold text and inline code in replies.',
       'group.rows.title': 'Conversation rows',
@@ -243,7 +246,10 @@ window.__ModuleLoader__.load({
       'item.other.hint': 'Tools not listed above',
       'button.default': 'Default',
       'button.resetAll': 'Reset all',
-      'footer.hint': 'Colors are saved in browser localStorage, not settings.yaml.',
+      'button.apply': 'Apply',
+      'apply.aria': 'Apply colors',
+      'apply.pending': 'Unapplied color changes',
+      'footer.hint': 'Colors are written to the conversation and saved in browser localStorage after you press Apply; settings.yaml is not written.',
       'hex.aria': 'Hex color',
       'swatch.ariaSuffix': 'color',
       'preview.title': 'Preview (all settings)',
@@ -270,7 +276,7 @@ window.__ModuleLoader__.load({
     const ja = {
       nav: 'アクセントカラー',
       title: 'アクセントカラー',
-      desc: '見出し・太字・インラインコード・思考・質問・各ツール行の色を個別に設定できます。変更は即時反映され、このブラウザに保存されます。',
+      desc: '見出し・太字・インラインコード・思考・質問・各ツール行の色を個別に設定できます。パネル内でプレビューし、「適用」で会話に反映してこのブラウザに保存します。',
       'group.text.title': '見出しと強調',
       'group.text.desc': 'アシスタント応答内の Markdown 見出し・太字・インラインコード。',
       'group.rows.title': '会話の行',
@@ -311,7 +317,10 @@ window.__ModuleLoader__.load({
       'item.other.hint': '上記以外のツール',
       'button.default': '既定',
       'button.resetAll': 'すべて既定に戻す',
-      'footer.hint': '配色はブラウザの localStorage に保存されます（settings.yaml には書き込みません）。',
+      'button.apply': '適用',
+      'apply.aria': '配色を適用',
+      'apply.pending': '未適用の配色変更があります',
+      'footer.hint': '「適用」で配色を会話に反映し、ブラウザの localStorage に保存します（settings.yaml には書き込みません）。',
       'hex.aria': '16 進カラー',
       'swatch.ariaSuffix': 'の色',
       'preview.title': 'プレビュー（すべての設定）',
@@ -338,7 +347,7 @@ window.__ModuleLoader__.load({
     const es = {
       nav: 'Colores de acento',
       title: 'Colores de acento',
-      desc: 'Elige colores para títulos, negritas, código en línea, pensamiento, preguntas y cada fila de herramienta. Los cambios se aplican al instante y se guardan en este navegador.',
+      desc: 'Elige colores para títulos, negritas, código en línea, pensamiento, preguntas y cada fila de herramienta. Previsualiza en el panel y pulsa «Aplicar» para actualizar la conversación y guardar en este navegador.',
       'group.text.title': 'Resultados y énfasis',
       'group.text.desc': 'Títulos de Markdown, negritas y código en línea en las respuestas.',
       'group.rows.title': 'Filas de conversación',
@@ -379,7 +388,10 @@ window.__ModuleLoader__.load({
       'item.other.hint': 'Herramientas no listadas arriba',
       'button.default': 'Predeterminado',
       'button.resetAll': 'Restablecer todo',
-      'footer.hint': 'Los colores se guardan en localStorage del navegador, no en settings.yaml.',
+      'button.apply': 'Aplicar',
+      'apply.aria': 'Aplicar colores',
+      'apply.pending': 'Hay cambios de color sin aplicar',
+      'footer.hint': 'Los colores se aplican a la conversación y se guardan en localStorage del navegador al pulsar «Aplicar»; settings.yaml no se modifica.',
       'hex.aria': 'Color hexadecimal',
       'swatch.ariaSuffix': 'color',
       'preview.title': 'Vista previa (todos los ajustes)',
@@ -406,7 +418,7 @@ window.__ModuleLoader__.load({
     const fr = {
       nav: 'Couleurs d’accent',
       title: 'Couleurs d’accent',
-      desc: 'Choisissez les couleurs des titres, du gras, du code en ligne, de la réflexion, des questions et de chaque ligne d’outil. Les changements s’appliquent immédiatement et sont enregistrés dans ce navigateur.',
+      desc: 'Choisissez les couleurs des titres, du gras, du code en ligne, de la réflexion, des questions et de chaque ligne d’outil. Prévisualisez dans le panneau, puis cliquez sur « Appliquer » pour mettre à jour la conversation et enregistrer dans ce navigateur.',
       'group.text.title': 'Résultats et emphase',
       'group.text.desc': 'Titres Markdown, gras et code en ligne dans les réponses.',
       'group.rows.title': 'Lignes de conversation',
@@ -447,7 +459,10 @@ window.__ModuleLoader__.load({
       'item.other.hint': 'Outils non listés ci-dessus',
       'button.default': 'Par défaut',
       'button.resetAll': 'Tout réinitialiser',
-      'footer.hint': 'Les couleurs sont enregistrées dans le localStorage du navigateur, pas dans settings.yaml.',
+      'button.apply': 'Appliquer',
+      'apply.aria': 'Appliquer les couleurs',
+      'apply.pending': 'Des changements de couleur ne sont pas appliqués',
+      'footer.hint': 'Les couleurs sont appliquées à la conversation et enregistrées dans le localStorage du navigateur après un clic sur « Appliquer » ; settings.yaml n’est pas modifié.',
       'hex.aria': 'Couleur hexadécimale',
       'swatch.ariaSuffix': 'couleur',
       'preview.title': 'Aperçu (tous les réglages)',
@@ -474,7 +489,7 @@ window.__ModuleLoader__.load({
     const de = {
       nav: 'Akzentfarben',
       title: 'Akzentfarben',
-      desc: 'Farben für Überschriften, Fettdruck, Inline-Code, Denken, Fragen und jede Werkzeugzeile wählen. Änderungen wirken sofort und werden in diesem Browser gespeichert.',
+      desc: 'Lege Farben für Überschriften, Fettdruck, Inline-Code, Denken, Fragen und jede Werkzeugzeile fest. Prüfe sie in der Vorschau und klicke auf „Anwenden“, um sie auf die Unterhaltung zu übertragen und in diesem Browser zu speichern.',
       'group.text.title': 'Ergebnisse & Hervorhebung',
       'group.text.desc': 'Markdown-Überschriften, Fettdruck und Inline-Code in Antworten.',
       'group.rows.title': 'Konversationszeilen',
@@ -515,7 +530,10 @@ window.__ModuleLoader__.load({
       'item.other.hint': 'Nicht oben gelistete Werkzeuge',
       'button.default': 'Standard',
       'button.resetAll': 'Alles zurücksetzen',
-      'footer.hint': 'Farben werden im localStorage des Browsers gespeichert, nicht in settings.yaml.',
+      'button.apply': 'Anwenden',
+      'apply.aria': 'Farben anwenden',
+      'apply.pending': 'Nicht angewendete Farbänderungen',
+      'footer.hint': '„Anwenden“ überträgt die Farben auf die Unterhaltung und speichert sie im localStorage des Browsers; settings.yaml wird nicht geschrieben.',
       'hex.aria': 'Hex-Farbe',
       'swatch.ariaSuffix': 'Farbe',
       'preview.title': 'Vorschau (alle Einstellungen)',
@@ -542,7 +560,7 @@ window.__ModuleLoader__.load({
     const ru = {
       nav: 'Акцентные цвета',
       title: 'Акцентные цвета',
-      desc: 'Выберите цвета для заголовков, жирного текста, встроенного кода, размышлений, вопросов и строк инструментов. Изменения применяются сразу и сохраняются в этом браузере.',
+      desc: 'Выберите цвета для заголовков, жирного текста, встроенного кода, размышлений, вопросов и строк инструментов. Проверьте их в панели и нажмите «Применить», чтобы обновить беседу и сохранить в этом браузере.',
       'group.text.title': 'Заголовки и выделение',
       'group.text.desc': 'Заголовки Markdown, жирный текст и встроенный код в ответах.',
       'group.rows.title': 'Строки диалога',
@@ -583,7 +601,10 @@ window.__ModuleLoader__.load({
       'item.other.hint': 'Инструменты, не перечисленные выше',
       'button.default': 'По умолчанию',
       'button.resetAll': 'Сбросить всё',
-      'footer.hint': 'Цвета хранятся в localStorage браузера, а не в settings.yaml.',
+      'button.apply': 'Применить',
+      'apply.aria': 'Применить цвета',
+      'apply.pending': 'Есть неприменённые изменения цветов',
+      'footer.hint': '«Применить» переносит цвета в беседу и сохраняет их в localStorage браузера; settings.yaml не изменяется.',
       'hex.aria': 'Шестнадцатеричный цвет',
       'swatch.ariaSuffix': 'цвет',
       'preview.title': 'Предпросмотр (все настройки)',
@@ -610,7 +631,7 @@ window.__ModuleLoader__.load({
     const pt = {
       nav: 'Cores de destaque',
       title: 'Cores de destaque',
-      desc: 'Escolha as cores de títulos, negrito, código embutido, raciocínio, perguntas e cada linha de ferramenta. As alterações aplicam-se na hora e ficam salvas neste navegador.',
+      desc: 'Escolha as cores de títulos, negrito, código embutido, raciocínio, perguntas e cada linha de ferramenta. Visualize no painel e clique em «Aplicar» para atualizar a conversa e salvar neste navegador.',
       'group.text.title': 'Resultados e ênfase',
       'group.text.desc': 'Títulos Markdown, negrito e código embutido nas respostas.',
       'group.rows.title': 'Linhas da conversa',
@@ -651,7 +672,10 @@ window.__ModuleLoader__.load({
       'item.other.hint': 'Ferramentas não listadas acima',
       'button.default': 'Padrão',
       'button.resetAll': 'Restaurar tudo',
-      'footer.hint': 'As cores ficam no localStorage do navegador, não no settings.yaml.',
+      'button.apply': 'Aplicar',
+      'apply.aria': 'Aplicar cores',
+      'apply.pending': 'Há alterações de cor não aplicadas',
+      'footer.hint': 'As cores são aplicadas à conversa e salvas no localStorage do navegador ao clicar em «Aplicar»; o settings.yaml não é alterado.',
       'hex.aria': 'Cor hexadecimal',
       'swatch.ariaSuffix': 'cor',
       'preview.title': 'Prévia (todas as configurações)',
@@ -699,17 +723,34 @@ window.__ModuleLoader__.load({
       return VAR_PREFIX + key.replace(/[A-Z]/g, (letter) => '-' + letter.toLowerCase())
     }
 
-    /** 当前配色表：启动时从 localStorage 恢复，内存副本保证存储不可用时仍可用。 */
-    let current = loadColors()
+    /** 已应用配色：写入页面根元素并持久化，只有用户点击「应用」才会变化。 */
+    let applied = loadColors()
+
+    /** 待应用配色：面板里正在编辑的副本，只驱动预览；关闭面板时丢弃。 */
+    let draft = { ...applied }
+
+    /** 预览作用域元素：面板挂载时绑定，draft 变量写在这里而不是根元素。 */
+    let previewScope = null
 
     /**
-     * 规范化颜色值。
+     * 规范化颜色值：统一小写并把三位十六进制展开成六位。
      * @param value - 用户输入或存储中的原始值。
-     * @returns 合法的小写十六进制颜色，非法值返回 null。
+     * @returns 合法的小写六位十六进制颜色，非法值返回 null。
      */
     function sanitizeColor(value) {
       // 只接受十六进制色值，避免把任意字符串写进 CSS 变量。
-      return typeof value === 'string' && COLOR_PATTERN.test(value.trim()) ? value.trim().toLowerCase() : null
+      if (typeof value !== 'string') {
+        return null
+      }
+      const trimmed = value.trim().toLowerCase()
+      if (!COLOR_PATTERN.test(trimmed)) {
+        return null
+      }
+      // #abc → #aabbcc：色块只认六位，dirty 比较也不该被三种写法干扰。
+      if (trimmed.length === 4) {
+        return '#' + trimmed[1] + trimmed[1] + trimmed[2] + trimmed[2] + trimmed[3] + trimmed[3]
+      }
+      return trimmed
     }
 
     /**
@@ -812,9 +853,9 @@ window.__ModuleLoader__.load({
     }
 
     /**
-     * 把配色表写入根元素的 CSS 变量，样式表据此实时生效。
+     * 把已应用配色写入根元素的 CSS 变量，样式表据此实时生效。
      * 值为 null 的分类移除变量并去掉对应开关属性，让页面回到 DSH 原色。
-     * @param keys - 只刷新这些分类（取色时只写变化的变量）；省略表示整表刷新。
+     * @param keys - 只刷新这些分类（应用时只写变化的变量）；省略表示整表刷新。
      */
     function applyColors(keys) {
       // 非浏览器环境（例如渲染测试）没有 document，直接跳过。
@@ -824,15 +865,15 @@ window.__ModuleLoader__.load({
       const root = document.documentElement
       const targets = keys === undefined ? Object.keys(DEFAULTS) : Array.from(keys)
       for (const key of targets) {
-        if (current[key] === null) {
+        if (applied[key] === null) {
           root.style.removeProperty(cssVarName(key))
         } else {
-          root.style.setProperty(cssVarName(key), current[key])
+          root.style.setProperty(cssVarName(key), applied[key])
         }
       }
       // 思考行的覆盖样式以 html 上的属性为开关，默认保留主题原色。
       if (targets.includes('think')) {
-        if (current.think === null) {
+        if (applied.think === null) {
           root.removeAttribute('data-dsh-accent-think')
         } else {
           root.setAttribute('data-dsh-accent-think', '')
@@ -844,27 +885,47 @@ window.__ModuleLoader__.load({
       }
     }
 
-    /** 待写入的 CSS 变量键：拖动取色时把高频事件攒起来，每帧只重算一次样式。 */
-    let dirtyKeys = new Set()
+    /**
+     * 把待应用配色写到面板作用域元素上，只影响预览区域。
+     * @param keys - 待刷新的分类键；面板未挂载时不做任何事。
+     */
+    function applyDraftToScope(keys) {
+      if (previewScope === null) {
+        return
+      }
+      for (const key of keys) {
+        if (draft[key] === null) {
+          previewScope.style.removeProperty(cssVarName(key))
+        } else {
+          previewScope.style.setProperty(cssVarName(key), draft[key])
+        }
+      }
+    }
+
+    /**
+     * 绑定或解绑预览作用域：挂载时把整份 draft 刷到面板节点上，卸载时解绑。
+     * @param element - 面板根节点，null 表示面板已卸载。
+     */
+    function setPreviewScope(element) {
+      previewScope = element
+      if (element !== null) {
+        applyDraftToScope(Object.keys(DEFAULTS))
+      }
+    }
+
+    /** 待写入的变量键：拖动取色时把高频事件攒起来，每帧只刷一次面板作用域。 */
+    let visualKeys = new Set()
 
     /** 已排期的视觉刷新句柄（requestAnimationFrame 返回值）。 */
     let visualFrame = null
 
-    /** 落盘与预览定位的延迟句柄：拖动过程中不写存储、不滚动预览。 */
-    let settleTimer = null
-
-    /** 本轮拖动最后改动的分类键，落盘时用于定位预览样例。 */
-    let settleTargetId = null
-
-    /** 落盘延迟：略大于数帧，取色停顿后才写存储并定位预览。 */
-    const SETTLE_DELAY_MS = 160
-
     /**
-     * 排一次视觉刷新：一帧内的多次取色合并为一次变量写入与一次面板重渲染。
+     * 排一次视觉刷新：一帧内的多次取色合并为一次作用域变量写入与一次面板重渲染。
+     * 这里只写面板作用域，绝不写根元素；根元素只由 applyDraft 写入。
      * @param id - 本次改动的分类键。
      */
     function scheduleVisual(id) {
-      dirtyKeys.add(id)
+      visualKeys.add(id)
       // 已经排过帧就只累积变化，等这一帧统一写入。
       if (visualFrame !== null) {
         return
@@ -877,55 +938,77 @@ window.__ModuleLoader__.load({
       flushVisual()
     }
 
-    /** 立即把攒下的颜色写进 CSS 变量并通知面板重渲染。 */
-    function flushVisual() {
+    /** 取消已排期的视觉刷新，避免卸载后还写样式。 */
+    function cancelVisual() {
       if (visualFrame !== null) {
         if (typeof window !== 'undefined' && typeof window.cancelAnimationFrame === 'function') {
           window.cancelAnimationFrame(visualFrame)
         }
         visualFrame = null
       }
-      const keys = dirtyKeys
-      dirtyKeys = new Set()
+    }
+
+    /** 立即把攒下的颜色写进面板作用域并通知面板重渲染。 */
+    function flushVisual() {
+      cancelVisual()
+      const keys = visualKeys
+      visualKeys = new Set()
       // 没有待刷新项时不做任何样式重算。
       if (keys.size === 0) {
         return
       }
-      applyColors(keys)
+      applyDraftToScope(keys)
       emitColors()
     }
 
+    /** 预览自动滚动的延迟句柄：取色停顿后才滚动，拖动过程中不做布局查询。 */
+    let revealTimer = null
+
+    /** 本轮最后改动的分类键，停顿后用于定位预览样例。 */
+    let revealTargetId = null
+
+    /** 预览定位延迟：略大于数帧，取色停顿后才滚动预览。 */
+    const REVEAL_DELAY_MS = 160
+
     /**
-     * 延迟落盘与预览定位：拖动取色时只在停顿后执行一次。
-     * 拖动过程中逐事件写 localStorage 与滚动预览会强制同步重排，是卡顿的主因。
+     * 延迟定位预览：拖动取色时只在停顿后滚动一次。
+     * 拖动过程中逐事件滚动预览会强制同步重排，是卡顿的主因。
      * @param id - 本次改动的分类键。
      */
-    function scheduleSettle(id) {
-      settleTargetId = id
-      if (settleTimer !== null) {
-        clearTimeout(settleTimer)
+    function schedulePreviewReveal(id) {
+      revealTargetId = id
+      if (revealTimer !== null) {
+        clearTimeout(revealTimer)
       }
-      settleTimer = setTimeout(flushSettle, SETTLE_DELAY_MS)
+      revealTimer = setTimeout(flushPreviewReveal, REVEAL_DELAY_MS)
     }
 
-    /** 立即落盘并定位预览：取色停顿、面板卸载或关闭页面时调用。 */
-    function flushSettle() {
-      if (settleTimer !== null) {
-        clearTimeout(settleTimer)
-        settleTimer = null
+    /** 取消待执行的预览定位，面板卸载时调用。 */
+    function cancelPreviewReveal() {
+      if (revealTimer !== null) {
+        clearTimeout(revealTimer)
+        revealTimer = null
       }
-      saveColors(current)
-      const id = settleTargetId
-      settleTargetId = null
+      revealTargetId = null
+    }
+
+    /** 立即定位预览：取色停顿或面板卸载时调用。 */
+    function flushPreviewReveal() {
+      if (revealTimer !== null) {
+        clearTimeout(revealTimer)
+        revealTimer = null
+      }
+      const id = revealTargetId
+      revealTargetId = null
       if (id !== null) {
         notifyPreview(id)
       }
     }
 
-    /** 通知所有订阅者配色已变化。 */
+    /** 通知所有订阅者待应用配色已变化；每次都发新对象，应用后按钮状态才能立刻复位。 */
     function emitColors() {
       for (const listener of listeners) {
-        listener(current)
+        listener({ ...draft })
       }
     }
 
@@ -949,42 +1032,75 @@ window.__ModuleLoader__.load({
     }
 
     /**
-     * 修改单个分类的颜色并立即生效、持久化。
+     * 修改单个分类的待应用颜色：只更新 draft 与预览，不写根元素、不落盘。
      * @param id - 分类键名（DEFAULTS 的键）。
      * @param value - 新颜色值；传 null 表示恢复原色（不覆盖）。
-     * @param options.live - 取色器拖动中的高频更新：视觉合并到每帧，落盘与预览定位延后到停顿后。
      */
-    function setColor(id, value, options) {
+    function setColor(id, value) {
       const next = value === null ? null : sanitizeColor(value)
       // 非法值或颜色未变化时不产生任何副作用。
       if (value !== null && next === null) {
         return
       }
-      if (current[id] === next) {
+      if (draft[id] === next) {
         return
       }
-      current = { ...current, [id]: next }
+      draft = { ...draft, [id]: next }
       scheduleVisual(id)
-      // 拖动中的连续取色只更新内存与 CSS 变量，存储与预览滚动留到停顿后。
-      if (options !== undefined && options.live === true) {
-        scheduleSettle(id)
-        return
-      }
-      // 点选色块、提交输入框、恢复默认都是一次性操作，立即刷新不延迟。
-      flushVisual()
-      settleTargetId = id
-      flushSettle()
+      schedulePreviewReveal(id)
     }
 
-    /** 全部恢复默认色。 */
-    function resetColors() {
-      current = { ...DEFAULTS }
-      // 重置是一次性操作：整表刷新、立即落盘，预览不因重置而滚动。
-      dirtyKeys = new Set()
-      settleTargetId = null
-      applyColors()
+    /** 待应用配色与已应用配色的差异键。 */
+    function dirtyKeys() {
+      return Object.keys(DEFAULTS).filter((key) => draft[key] !== applied[key])
+    }
+
+    /**
+     * 判断一份配色相对已应用配色是否有差异（供面板派生按钮状态）。
+     * @param colors - 待比较的配色表。
+     * @returns 存在任意差异时为 true。
+     */
+    function hasPending(colors) {
+      return Object.keys(DEFAULTS).some((key) => colors[key] !== applied[key])
+    }
+
+    /** 面板挂载：从已应用配色开始编辑。 */
+    function beginDraft() {
+      draft = { ...applied }
+    }
+
+    /** 面板卸载：丢弃未应用的修改。 */
+    function discardDraft() {
+      cancelVisual()
+      visualKeys = new Set()
+      draft = { ...applied }
+    }
+
+    /**
+     * 应用待应用配色：一次写入全部差异键、落盘并通知面板刷新。
+     * 这是根元素唯一的业务写入路径。
+     * @returns 本次写入的分类键；没有差异时为空数组。
+     */
+    function applyDraft() {
+      const keys = dirtyKeys()
+      if (keys.length === 0) {
+        return []
+      }
+      applied = { ...draft }
+      applyColors(keys)
+      saveColors(applied)
       emitColors()
-      flushSettle()
+      return keys
+    }
+
+    /** 全部恢复默认：只修改待应用配色，仍需点「应用」才生效。 */
+    function resetColors() {
+      draft = { ...DEFAULTS }
+      // 重置是一次性操作：整表刷新面板作用域，预览不因重置而滚动。
+      cancelVisual()
+      visualKeys = new Set()
+      applyDraftToScope(Object.keys(DEFAULTS))
+      emitColors()
     }
 
     /**
@@ -999,9 +1115,14 @@ window.__ModuleLoader__.load({
       }
     }
 
-    /** 读取当前配色表的副本，供面板初始状态使用。 */
+    /** 读取待应用配色表的副本，供面板初始状态使用。 */
     function getColors() {
-      return { ...current }
+      return { ...draft }
+    }
+
+    /** 读取已应用配色表的副本，用于判断未应用状态。 */
+    function getAppliedColors() {
+      return { ...applied }
     }
 
     /**
@@ -1023,16 +1144,16 @@ window.__ModuleLoader__.load({
      */
     function HexField({ value, onCommit, t }) {
       // null 表示当前没有在编辑，输入框显示外部颜色并跟随取色器实时变化。
-      const [draft, setDraft] = React.useState(null)
-      const editing = draft !== null
+      const [typed, setTyped] = React.useState(null)
+      const editing = typed !== null
 
       /** 提交输入：合法则回调，非法则回滚到外部颜色。 */
       const commit = () => {
         if (!editing) {
           return
         }
-        const next = sanitizeColor(draft)
-        setDraft(null)
+        const next = sanitizeColor(typed)
+        setTyped(null)
         if (next === null) {
           return
         }
@@ -1041,10 +1162,10 @@ window.__ModuleLoader__.load({
 
       return h('input', {
         className: 'dsh-accent-hex',
-        value: editing ? draft : value,
+        value: editing ? typed : value,
         spellCheck: false,
         'aria-label': t('hex.aria'),
-        onChange: (event) => setDraft(event.target.value),
+        onChange: (event) => setTyped(event.target.value),
         onBlur: commit,
         onKeyDown: (event) => {
           if (event.key === 'Enter') {
@@ -1090,8 +1211,8 @@ window.__ModuleLoader__.load({
             type: 'color',
             value: swatch,
             'aria-label': label + ' ' + t('swatch.ariaSuffix'),
-            // 取色器拖动会连续触发 onChange，交给 live 通道合并到每帧，保证拖动顺滑。
-            onChange: (event) => setColor(item.id, event.target.value, { live: true })
+            // 取色器拖动会连续触发 onChange，只更新待应用配色与预览，不碰会话与存储。
+            onChange: (event) => setColor(item.id, event.target.value)
           }),
           h(HexField, { value: swatch, onCommit: (next) => setColor(item.id, next), t }),
           h(
@@ -1109,10 +1230,11 @@ window.__ModuleLoader__.load({
 
     /**
      * 效果预览：列举全部 15 项设置，正文区域可独立滚动。
-     * 取色时自动滚到对应样例，配合粘性定位可边改边看。
+     * 标题行右侧常驻「应用」按钮；预览使用待应用配色，只影响面板作用域。
      * @param props.t - 翻译函数。
+     * @param props.dirty - 是否存在未应用的配色差异。
      */
-    function AccentPreview({ t }) {
+    function AccentPreview({ t, dirty }) {
       const bodyRef = React.useRef(null)
 
       // 订阅取色事件：取色停顿后把刚改动的分类样例滚入预览可视区。
@@ -1145,7 +1267,30 @@ window.__ModuleLoader__.load({
       return h(
         'div',
         { className: 'dsh-accent-preview' },
-        h('div', { className: 'dsh-accent-preview-head' }, t('preview.title')),
+        h(
+          'div',
+          { className: 'dsh-accent-preview-head' },
+          h('span', { className: 'dsh-accent-preview-title' }, t('preview.title')),
+          h(
+            'span',
+            { className: 'dsh-accent-preview-actions' },
+            // 未应用状态播报：只在 dirty 翻转时更新文本，避免重复叨扰。
+            h('span', { className: 'dsh-accent-sr-only', 'aria-live': 'polite' }, dirty ? t('apply.pending') : ''),
+            h(
+              'button',
+              {
+                className: 'dsh-accent-apply',
+                type: 'button',
+                disabled: !dirty,
+                'aria-label': t('apply.aria'),
+                onClick: () => {
+                  applyDraft()
+                }
+              },
+              t('button.apply')
+            )
+          )
+        ),
         h(
           'div',
           { className: 'dsh-accent-preview-body', ref: bodyRef },
@@ -1191,28 +1336,36 @@ window.__ModuleLoader__.load({
     function AccentSection(props) {
       const t = props && typeof props.t === 'function' ? props.t : translate
       const [colors, setColorsState] = React.useState(() => getColors())
+      const sectionRef = React.useRef(null)
+      // 未应用状态由「当前渲染的配色」与模块里的已应用配色比较得出。
+      const dirty = hasPending(colors)
 
-      // 面板打开期间跟随外部配色变更（例如恢复默认）。
+      // 面板打开期间跟随待应用配色变更（取色、恢复默认、应用后的复位）。
       React.useEffect(() => subscribeColors(setColorsState), [])
 
-      // 面板关闭时补齐拖动中尚未落盘的配色，避免最后一次调整丢失。
-      React.useEffect(
-        () => () => {
-          flushSettle()
-        },
-        []
-      )
+      // 面板挂载：从已应用配色开始编辑，并把待应用变量限定在面板作用域内；
+      // 关闭面板时丢弃未应用的修改，下一次打开重新从已应用配色开始。
+      React.useEffect(() => {
+        beginDraft()
+        setColorsState(getColors())
+        setPreviewScope(sectionRef.current)
+        return () => {
+          cancelPreviewReveal()
+          setPreviewScope(null)
+          discardDraft()
+        }
+      }, [])
 
       return h(
         'div',
-        { className: 'dsh-accent-section' },
+        { className: 'dsh-accent-section', ref: sectionRef },
         h(
           'div',
           { className: 'dsh-accent-head' },
           h('h2', { className: 'dsh-accent-title' }, t('title')),
           h('p', { className: 'dsh-accent-desc' }, t('desc'))
         ),
-        h(AccentPreview, { t }),
+        h(AccentPreview, { t, dirty }),
         GROUPS.map((group) =>
           h(
             'section',
@@ -1270,22 +1423,10 @@ window.__ModuleLoader__.load({
 
     /** 客户端插件入口：应用配色、注入样式、注册字典并把取色面板注册进设置侧边栏。 */
     function apply(ctx) {
+      // 启动时只恢复已应用配色；此后根元素只由用户点击「应用」写入。
       applyColors()
       installStyles(ctx)
       installLocale(ctx)
-      ctx.effect(() => {
-        /** 页面关闭/切走前补齐未落盘的配色，拖完立刻切页也不会丢最后一次调整。 */
-        const flush = () => {
-          flushSettle()
-        }
-        if (typeof window === 'undefined' || typeof window.addEventListener !== 'function') {
-          return () => {}
-        }
-        window.addEventListener('pagehide', flush)
-        return () => {
-          window.removeEventListener('pagehide', flush)
-        }
-      }, 'ui-accent: flush pending colors')
       ctx.slots.inject('settings.section', () =>
         ctx.slots.register(
           {
@@ -1310,10 +1451,17 @@ window.__ModuleLoader__.load({
     exports.SUPPORTED_LOCALES = Object.keys(DICTS)
     exports.COLOR_DEFAULTS = DEFAULTS
     exports.getColors = getColors
+    exports.getAppliedColors = getAppliedColors
     exports.setColor = setColor
+    exports.applyDraft = applyDraft
     exports.resetColors = resetColors
-    // 立即落盘待提交的配色：供自测与卸载/切页时使用。
-    exports.flushPending = flushSettle
+    exports.subscribeColors = subscribeColors
+    exports.dirtyKeys = dirtyKeys
+    exports.hasPending = hasPending
+    exports.beginDraft = beginDraft
+    exports.discardDraft = discardDraft
+    exports.setPreviewScope = setPreviewScope
+    exports.sanitizeColor = sanitizeColor
     return module.exports
   }
 })
