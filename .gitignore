@@ -1,0 +1,21 @@
+# 依赖与安装产物
+node_modules/
+package-lock.json
+
+# 构建与文档生成物（可用 npm run preview / node build.mjs 重新生成）
+preview/panel.html
+preview/panel-en.html
+
+# 本地安装脚本留下的备份与临时产物
+*.bak
+*.tgz
+*.log
+*.tmp
+*.swp
+
+# 编辑器与系统文件
+.vscode/
+.idea/
+.DS_Store
+Thumbs.db
+desktop.ini

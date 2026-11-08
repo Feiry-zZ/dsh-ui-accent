@@ -117,83 +117,9 @@ On activation the host half appends a line to `<DSH_HOME>/logs/ui-accent.log`:
 
 (Later changes to the client bundle are hot-reloaded by `@deepseek-ai/dsh-client-hmr` and no longer reach the host log.)
 
-## Repository layout
-
-```
-dsh-ui-accent/
-├─ package.json           # dsh.bundle (bundle patch) + dsh.client (platform: web / inject)
-├─ cordis.patch.yml       # bundle patch: registers the plugin entry itself
-├─ locale/                # title and description shown by the plugin manager (8 languages)
-├─ icon.svg               # plugin icon
-├─ build.mjs              # inlines src/theme.css into lib/client.js
-├─ install.mjs            # local-link install/uninstall script (cross-platform, Node stdlib only)
-├─ LICENSE                # MIT license
-├─ src/
-│  ├─ client.js           # client plugin source (settings panel + color state)
-│  └─ theme.css           # conversation-area selectors and panel styles (the single source of colors)
-├─ lib/
-│  ├─ index.js            # host half: activation log and startup-graph check
-│  └─ client.js           # build output (the bundle DSH actually loads)
-├─ test/
-│  ├─ render-test.mjs        # panel structure / style injection / colors / persistence
-│  ├─ migration-test.mjs     # v1 → v3 storage migration
-│  ├─ stale-default-test.mjs # default changes vs. user choices
-│  ├─ schedule-test.mjs      # frame coalescing and deferred persistence
-│  └─ package-test.mjs       # bundle packaging contract (bundle / files / exports / icon)
-└─ preview/
-   ├─ preview.html        # effect preview page (?lang=en for English)
-   ├─ build-panel.mjs     # renders the real panel component to a static page
-   └─ *.png               # README images
-```
-
 ## Development
 
-`src/theme.css` is the single source of truth for colors and selectors; `DEFAULTS` in `src/client.js` holds the factory palette. After editing:
-
-```powershell
-node build.mjs                   # build lib/client.js
-node --check lib\client.js       # syntax check
-node test\render-test.mjs        # all five tests should print OK
-node test\migration-test.mjs
-node test\stale-default-test.mjs
-node test\schedule-test.mjs
-node test\package-test.mjs
-```
-
-Regenerate the documentation images (Chrome required):
-
-```powershell
-# 1. Render the real panel component to static pages (Chinese and English)
-node preview\build-panel.mjs
-
-# 2. Take the screenshots in headless mode (replace <repo> with the absolute repo path)
-chrome --headless=new --hide-scrollbars --force-device-scale-factor=2 --window-size=790,1620  --screenshot=preview\panel.png    "file:///<repo>/preview/panel.html"
-chrome --headless=new --hide-scrollbars --force-device-scale-factor=2 --window-size=790,1620  --screenshot=preview\panel-en.png "file:///<repo>/preview/panel-en.html"
-chrome --headless=new --hide-scrollbars --force-device-scale-factor=2 --window-size=1000,560  --screenshot=preview\preview.png    "file:///<repo>/preview/preview.html"
-chrome --headless=new --hide-scrollbars --force-device-scale-factor=2 --window-size=1000,560  --screenshot=preview\preview-en.png "file:///<repo>/preview/preview.html?lang=en"
-```
-
-Bundle changes are detected by `@deepseek-ai/dsh-client-hmr`, which reloads the plugin automatically; CSS-only edits go through the same path.
-
-## Publish (maintainers)
-
-The package name is scoped (`@feiry-zz/dsh-ui-accent`), so **the npm organization `feiry-zz` must exist** (npmjs.com → Organizations) and the publishing account must be a member of it — otherwise `npm publish` returns 403.
-
-```powershell
-npm pkg get name version        # confirm name and version
-npm pack --dry-run             # inspect the tarball (lib / locale / icon / cordis.patch.yml)
-npm publish --dry-run          # dry run
-npm publish --access public    # real publish (prepublishOnly builds and runs all 5 tests first)
-```
-
-The version only affects the plugin manager's "Update to x.y.z available" hint; it is independent of the DSH version. Note that npm only allows `npm unpublish` within **72 hours** of publishing — after that you can only `npm deprecate`, and an unpublished version number can never be reused, so a fix must go out as a new version.
-
-## Storage & compatibility
-
-- Storage key `dsh-accent.colors.v3`, shape `{ version: 3, colors: {...} }`, holding only categories that differ from the defaults.
-- The older `v2` envelope and the `v1` flat map are migrated on first load; values equal to a historical default (thinking's old orange `#fb923c`, skill's old teal `#2dd4bf`, other tools' old purple `#c084fc`) are treated as "never changed" and follow the current default, while real custom colors are preserved.
-- Internal CSS variables keep the `--dsh-accent-*` prefix and the thinking switch stays `html[data-dsh-accent-think]` — the historical naming differs from the package name by design.
-- Selectors rely on DSH's stable DOM contract: `data-tool` / `data-variant` on tool rows, `data-variant="think"` on thinking rows, and the `_markdown` prefix on Markdown roots. If a category stops being colored after a major DSH upgrade, check those hooks first and update `src/theme.css`.
+Build, tests, bundle contract and release steps live in [AGENTS.md](./AGENTS.md).
 
 ## Uninstall
 

@@ -117,83 +117,9 @@ Host 端激活后会写一行日志到 `<DSH_HOME>/logs/ui-accent.log`，可用�
 
 （上述为首次装载时的示例；之后客户端 bundle 的改动由 `@deepseek-ai/dsh-client-hmr` 直接热重载，不再写 Host 日志。）
 
-## 目录结构
+## 开发
 
-```
-dsh-ui-accent/
-├─ package.json           # dsh.bundle（组合包补丁）+ dsh.client（platform: web / inject）
-├─ cordis.patch.yml       # 组合包补丁：把自己注册成插件条目
-├─ locale/                # 插件管理里展示的标题与描述（8 种语言）
-├─ icon.svg               # 插件图标
-├─ build.mjs              # 把 src/theme.css 内联进 lib/client.js
-├─ install.mjs            # 本地链接安装/卸载脚本（跨平台，仅用 Node 标准库）
-├─ LICENSE                # MIT 许可
-├─ src/
-│  ├─ client.js           # 客户端插件源码（取色面板 + 配色状态）
-│  └─ theme.css           # 会话区选择器与设置面板样式（颜色唯一来源）
-├─ lib/
-│  ├─ index.js            # Host 端：激活日志与启动图自检
-│  └─ client.js           # 构建产物（DSH 实际加载的 bundle）
-├─ test/
-│  ├─ render-test.mjs        # 面板结构 / 样式注入 / 颜色写入与持久化
-│  ├─ migration-test.mjs     # v1 → v3 配色存储迁移
-│  ├─ stale-default-test.mjs # 默认色升级：旧默认不算用户选择
-│  ├─ schedule-test.mjs      # 拖动取色的帧合并与延后落盘
-│  └─ package-test.mjs       # 组合包打包契约（bundle / files / exports / icon）
-└─ preview/
-   ├─ preview.html        # 效果预览页（?lang=en 切换英文）
-   ├─ build-panel.mjs     # 把真实设置面板组件渲染成静态页，供截图使用
-   └─ *.png               # README 配图
-```
-
-## 修改与调试
-
-`src/theme.css` 是颜色与选择器的唯一来源，`src/client.js` 里的 `DEFAULTS` 是出厂默认色。修改后：
-
-```powershell
-node build.mjs                   # 生成 lib/client.js
-node --check lib\client.js       # 语法检查
-node test\render-test.mjs        # 以下五个自测都应当输出 OK
-node test\migration-test.mjs
-node test\stale-default-test.mjs
-node test\schedule-test.mjs
-node test\package-test.mjs
-```
-
-重新生成文档配图（需要 Chrome）：
-
-```powershell
-# 1. 用真实的面板组件渲染静态页（中英文各一份）
-node preview\build-panel.mjs
-
-# 2. 无头模式截图（把 <repo> 换成本仓库的绝对路径）
-chrome --headless=new --hide-scrollbars --force-device-scale-factor=2 --window-size=790,1620  --screenshot=preview\panel.png    "file:///<repo>/preview/panel.html"
-chrome --headless=new --hide-scrollbars --force-device-scale-factor=2 --window-size=790,1620  --screenshot=preview\panel-en.png "file:///<repo>/preview/panel-en.html"
-chrome --headless=new --hide-scrollbars --force-device-scale-factor=2 --window-size=1000,560  --screenshot=preview\preview.png    "file:///<repo>/preview/preview.html"
-chrome --headless=new --hide-scrollbars --force-device-scale-factor=2 --window-size=1000,560  --screenshot=preview\preview-en.png "file:///<repo>/preview/preview.html?lang=en"
-```
-
-bundle 内容变化会被 `@deepseek-ai/dsh-client-hmr` 检测到并自动重载该插件；只改 CSS 也会走同一条链路。
-
-## 发布（维护者）
-
-包名 `@feiry-zz/dsh-ui-accent` 带 scope，**发布前需要先有 npm 组织 `feiry-zz`**（npmjs.com → Organizations → 新建），且发布账号是组织成员；否则 `npm publish` 会返回 403。
-
-```powershell
-npm pkg get name version        # 确认包名与版本
-npm pack --dry-run             # 看打包内容（lib / locale / icon / cordis.patch.yml）
-npm publish --dry-run          # 干跑
-npm publish --access public    # 正式发布（prepublishOnly 会自动构建 + 跑 5 个自测）
-```
-
-版本号只影响插件管理里「可更新到 x.y.z」的提示，与 DSH 版本无关。注意 npm 只允许发布后 **72 小时内** `npm unpublish`，之后只能 `npm deprecate`；而且被删掉的版本号不能复用，修正只能发新版本。
-
-## 存储与兼容性
-
-- 存储键 `dsh-accent.colors.v3`，结构为 `{ version: 3, colors: {...} }`，只保存与出厂默认不同的分类。
-- 旧版 `v2` 信封与 `v1` 扁平配色会在首次加载时自动迁移；其中与历史默认相同的项（思考旧橙 `#fb923c`、技能旧青 `#2dd4bf`、其他工具旧紫 `#c084fc`）视为「没改过」，交给当前默认处理，其余自定义色原样保留。
-- 内部 CSS 变量前缀 `--dsh-accent-*`、思考覆盖开关 `html[data-dsh-accent-think]` 保留历史命名，与包名不同属正常。
-- 选择器依赖 DSH 稳定的 DOM 契约：工具行的 `data-tool` / `data-variant`、思考行的 `data-variant="think"`、Markdown 根类的 `_markdown` 前缀。DSH 大版本升级后若某类行不再变色，优先核对这些钩子并更新 `src/theme.css`。
+构建、测试、打包契约与发布流程见 [AGENTS.md](./AGENTS.md)。
 
 ## 卸载
 
