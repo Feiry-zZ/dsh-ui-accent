@@ -13,6 +13,9 @@ preview/panel-en.html
 *.tmp
 *.swp
 
+# 本地 OpenSpec / agent 目录（技能与运行产物，不入库）
+.dsh/
+
 # 编辑器与系统文件
 .vscode/
 .idea/
