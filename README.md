@@ -4,7 +4,7 @@
 
 给 DeepSeek Harness（DSH）的会话区按语义着色，并在「设置 → 界面配色」里逐项取色。颜色修改即时生效，保存在本机浏览器（`localStorage`），不写入 `settings.yaml`。
 
-插件以 **DSH 组合包（bundle）** 形式发布到 npm：`@feiry-zz/dsh-ui-accent`。在 DSH 的插件管理里填包名即可安装，Windows / macOS / Linux 通用。
+插件以 **DSH 组合包（bundle）** 形式发布到 npm：`@feiry-zz/dsh-ui-accent`。在 DSH 的插件管理里填包名即可安装，Windows、macOS、Linux 通用。
 
 界面文案跟随 DSH 通用设置的语言（`locale` 服务，覆盖 DSH 支持的全部 8 种语言），效果预览列举全部 15 项设置，并在固定高度内独立滚动。
 
@@ -16,9 +16,9 @@
 
 ## 特性
 
-- **按语义着色**：结果标题（Markdown 标题）、加粗文字、行内代码、思考、提问，以及运行命令 / 编辑 / 写入 / 读取 / 搜索 / 代码 / 任务 / 技能 / 插件 / 其他工具共 15 类。
+- **按语义着色**：结果标题（Markdown 标题）、加粗文字、行内代码、思考、提问，以及运行命令、编辑、写入、读取、搜索、代码、任务、技能、插件、其他工具共 15 类。
 - **拖动即时预览**：取色器拖动时颜色变化合并到每帧一次写 CSS 变量，只写变化的那一个变量；落盘与预览滚动延后到取色停顿后，拖动跟手不卡顿。
-- **跟随 DSH 语言**：向 `locale` 服务注册 `settings.uiAccent` 命名空间，覆盖 DSH 支持的全部 8 种语言——中文 / English / 日本語 / Español / Français / Deutsch / Русский / Português，切换语言后面板与侧边栏标题即时更新。
+- **跟随 DSH 语言**：向 `locale` 服务注册 `settings.uiAccent` 命名空间，覆盖 DSH 支持的全部 8 种语言——中文、English、日本語、Español、Français、Deutsch、Русский、Português，切换语言后面板与侧边栏标题即时更新。
 - **默认值可演进**：存储只保存「与出厂默认不同」的项，插件调整默认色时，没动过的分类自动跟随新默认。
 - **主题友好**：思考与行内代码默认不覆盖，分别沿用 DSH 原色灰和超链接蓝，跟随深浅色主题。
 
@@ -49,7 +49,7 @@
 
 ## 使用
 
-1. 打开 DSH 的 **设置**，左侧导航出现 **界面配色 / Accent colors**。
+1. 打开 DSH 的 **设置**，左侧导航出现 **界面配色**。
 2. 点击任意分类的色块或直接输入十六进制色值，会话区立即变色。
 3. 选择保存在浏览器 `localStorage`；行内代码默认跟随主题的链接蓝，其余自定义色在切换深浅色主题时保持不变。
 4. 面板顶部的「效果预览（全部设置）」列举全部 15 项设置，高 220px、内部可滚动，并**粘在设置内容区顶部**；向下滚动配置项时预览始终可见。
@@ -63,7 +63,7 @@
 
 ### 方式一：插件管理安装（推荐，任何平台）
 
-在 DSH 的 **设置 → 插件 → 安装** 里填入 npm 包名：
+在 DSH 的 **设置 → 插件 → 添加插件** 里填入包名或地址：
 
 ```
 @feiry-zz/dsh-ui-accent
@@ -81,9 +81,9 @@ cd dsh-ui-accent
 node install.mjs
 ```
 
-脚本只用 Node 标准库，**Windows / macOS / Linux 通用**，在 `<DSH_HOME>/profiles/desktop` 下做两件事（`<DSH_HOME>` 默认 `~/.dsh`，可用环境变量覆盖）：
+脚本只用 Node 标准库，**Windows、macOS、Linux 通用**，在 `<DSH_HOME>/profiles/desktop` 下做两件事（`<DSH_HOME>` 默认 `~/.dsh`，可用 `DSH_HOME` 环境变量覆盖）：
 
-1. 在 `node_modules/@feiry-zz/dsh-ui-accent` 建一个指向本仓库的目录链接——Windows 用 junction，macOS / Linux 用符号链接；
+1. 在 `node_modules/@feiry-zz/dsh-ui-accent` 建一个指向本仓库的目录链接——Windows 用 junction，macOS、Linux 用符号链接；
 2. 在 profile 的 `cordis.patch.yml` 追加插件登记：
 
 ```yaml
@@ -95,7 +95,7 @@ node install.mjs
 不想用脚本也可以手动做等价的两步：
 
 ```bash
-# Windows（CMD / PowerShell 均可；带 scope 的包要先建好父目录）
+# Windows（CMD 或 PowerShell 均可；带 scope 的包要先建好父目录）
 mkdir "%USERPROFILE%\.dsh\profiles\desktop\node_modules\@feiry-zz"
 mklink /J "%USERPROFILE%\.dsh\profiles\desktop\node_modules\@feiry-zz\dsh-ui-accent" "D:\path\to\dsh-ui-accent"
 
@@ -186,7 +186,7 @@ npm publish --dry-run          # 干跑
 npm publish --access public    # 正式发布（prepublishOnly 会自动构建 + 跑 5 个自测）
 ```
 
-版本号只影响「插件管理 → 检查更新」的比较，与 DSH 版本无关。注意 npm 发布 24 小时内才可以 `npm unpublish`，之后只能 `npm deprecate`。
+版本号只影响插件管理里「可更新到 x.y.z」的提示，与 DSH 版本无关。注意 npm 只允许发布后 **72 小时内** `npm unpublish`，之后只能 `npm deprecate`；而且被删掉的版本号不能复用，修正只能发新版本。
 
 ## 存储与兼容性
 
