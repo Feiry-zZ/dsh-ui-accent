@@ -55,32 +55,40 @@ Every category can be changed independently, and **Reset all** restores the defa
 
 > If **Accent colors** does not show up in Settings yet, refresh the window once (`Ctrl+R`).
 
-## Install (local plugin)
+## Install
 
-The plugin plugs into a DSH profile through its patch layer and never modifies the DSH installation. DSH must support client plugins (`dsh.client`); the installer only uses the Node standard library, so it works the same on **Windows, macOS and Linux** (DSH itself runs on Node — nothing extra to install).
+The plugin ships as a **DSH bundle**, so you can install it straight from the plugin manager — pick either method below.
+
+### Option 1: plugin manager (recommended, works everywhere)
+
+In DSH open **Settings → Plugins → Install** and paste this repository URL:
+
+```
+https://github.com/Feiry-zZ/dsh-ui-accent.git
+```
+
+DSH fetches the repository and layers the bundle patch (`cordis.patch.yml`) onto the profile, which activates the plugin. Refresh the window once (`Ctrl+R` / `Cmd+R`) if the settings entry is not there yet. No Node, no manual links.
+
+### Option 2: local link (for hacking on the code)
+
+Best when you want to edit the checkout and rely on HMR:
 
 ```bash
-# 1. Clone the repository
 git clone git@github.com:Feiry-zZ/dsh-ui-accent.git
 cd dsh-ui-accent
-
-# 2. Install (create the directory link and register the patch)
 node install.mjs
 ```
 
-The script does exactly two things under `<DSH_HOME>/profiles/desktop` (`<DSH_HOME>` defaults to `~/.dsh`, override with the `DSH_HOME` environment variable):
+The script only uses the Node standard library (so **Windows, macOS and Linux** behave the same) and does two things under `<DSH_HOME>/profiles/desktop` (`<DSH_HOME>` defaults to `~/.dsh`, override with the `DSH_HOME` environment variable):
 
 1. creates `node_modules/dsh-ui-accent` as a directory link to this repository — a junction on Windows, a symlink on macOS / Linux;
-2. appends this entry to `cordis.patch.yml`:
+2. appends this entry to the profile's `cordis.patch.yml`:
 
 ```yaml
-# <DSH_HOME>/profiles/desktop/cordis.patch.yml
 - insert:
     - id: ui-accent
       name: dsh-ui-accent
 ```
-
-`cordis.patch.yml` is hot-reloaded: once saved, the loader recomposes the patch layer and activates the plugin — no DSH restart needed. If the settings entry does not show up yet, refresh the window once (`Ctrl+R` / `Cmd+R`).
 
 No script needed if you prefer the manual route — it is equivalent to the two steps above:
 
@@ -92,7 +100,9 @@ mklink /J "%USERPROFILE%\.dsh\profiles\desktop\node_modules\dsh-ui-accent" "D:\p
 ln -s "$(pwd)" ~/.dsh/profiles/desktop/node_modules/dsh-ui-accent
 ```
 
-Then append the YAML block above to the end of `cordis.patch.yml`.
+Then append the YAML block above to the end of the profile's `cordis.patch.yml`.
+
+> ⚠️ The two methods are mutually exclusive: once installed through the plugin manager, do not run `install.mjs` — it would register a second `ui-accent` entry. Uninstall first if you want to switch.
 
 On activation the host half appends a line to `<DSH_HOME>/logs/ui-accent.log`:
 
@@ -107,9 +117,12 @@ On activation the host half appends a line to `<DSH_HOME>/logs/ui-accent.log`:
 
 ```
 dsh-ui-accent/
-├─ package.json           # dsh.client declaration (platform: web / inject)
+├─ package.json           # dsh.bundle (bundle patch) + dsh.client (platform: web / inject)
+├─ cordis.patch.yml       # bundle patch: registers the plugin entry itself
+├─ locale/                # title and description shown by the plugin manager (zh / en)
+├─ icon.svg               # plugin icon
 ├─ build.mjs              # inlines src/theme.css into lib/client.js
-├─ install.mjs            # install/uninstall script (cross-platform, Node stdlib only)
+├─ install.mjs            # local-link install/uninstall script (cross-platform, Node stdlib only)
 ├─ LICENSE                # MIT license
 ├─ src/
 │  ├─ client.js           # client plugin source (settings panel + color state)
@@ -121,7 +134,8 @@ dsh-ui-accent/
 │  ├─ render-test.mjs        # panel structure / style injection / colors / persistence
 │  ├─ migration-test.mjs     # v1 → v3 storage migration
 │  ├─ stale-default-test.mjs # default changes vs. user choices
-│  └─ schedule-test.mjs      # frame coalescing and deferred persistence
+│  ├─ schedule-test.mjs      # frame coalescing and deferred persistence
+│  └─ package-test.mjs       # bundle packaging contract (bundle / files / exports / icon)
 └─ preview/
    ├─ preview.html        # effect preview page (?lang=en for English)
    ├─ build-panel.mjs     # renders the real panel component to a static page
@@ -135,10 +149,11 @@ dsh-ui-accent/
 ```powershell
 node build.mjs                   # build lib/client.js
 node --check lib\client.js       # syntax check
-node test\render-test.mjs        # all four tests should print OK
+node test\render-test.mjs        # all five tests should print OK
 node test\migration-test.mjs
 node test\stale-default-test.mjs
 node test\schedule-test.mjs
+node test\package-test.mjs
 ```
 
 Regenerate the documentation images (Chrome required):
@@ -165,13 +180,12 @@ Bundle changes are detected by `@deepseek-ai/dsh-client-hmr`, which reloads the 
 
 ## Uninstall
 
-```bash
-node install.mjs --uninstall
-```
+- **Plugin manager install**: uninstall the bundle in **Settings → Plugins** — it removes the plugin entry it registered.
+- **Local link install**: `node install.mjs --uninstall` (removes the link and strips the entry from the profile's `cordis.patch.yml`, backing it up as `.bak` first).
 
-The script removes the directory link from the profile and strips the plugin entry from `cordis.patch.yml` (the file is backed up as `cordis.patch.yml.bak` first); other patch entries are untouched.
+Both need a window refresh (`Ctrl+R` / `Cmd+R`) before the settings page disappears: the host half unloads immediately, but the settings page and the color styles are registered by the client bundle.
 
-**Note**: the host half unloads immediately, but the **Accent colors** settings page and the color styles are registered by the client bundle, so they disappear only after a window refresh (`Ctrl+R` / `Cmd+R`). To do it by hand instead:
+To do the local-link variant by hand:
 
 1. remove the `ui-accent` `insert` block (plus the two comment lines above it) from `cordis.patch.yml`;
 2. remove the directory link:
@@ -184,7 +198,7 @@ rm ~/.dsh/profiles/desktop/node_modules/dsh-ui-accent
 rmdir "%USERPROFILE%\.dsh\profiles\desktop\node_modules\dsh-ui-accent"
 ```
 
-3. Optional: delete `<DSH_HOME>/logs/ui-accent.log` and the repository directory. Picked colors live in the browser's `localStorage` and survive uninstall; they come back on reinstall.
+Picked colors live in the browser's `localStorage` and survive uninstall; they come back on reinstall.
 
 ## License
 

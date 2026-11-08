@@ -1,6 +1,6 @@
 {
   "name": "dsh-ui-accent",
-  "version": "0.2.0",
+  "version": "0.3.0",
   "private": true,
   "description": "Accent colors for DeepSeek Harness: colorize result headings, bold text, inline code, thinking, questions and tool rows, with a settings panel for picking each color.",
   "license": "MIT",
@@ -19,11 +19,16 @@
     "./client": {
       "default": "./lib/client.js"
     },
+    "./locale/*.json": "./locale/*.json",
+    "./icon": "./icon.svg",
     "./package.json": "./package.json"
   },
   "files": [
     "lib",
     "src",
+    "cordis.patch.yml",
+    "locale/*.json",
+    "icon.svg",
     "README.md",
     "README.en.md"
   ],
@@ -31,10 +36,14 @@
     "dsh",
     "deepseek-harness",
     "plugin",
+    "bundle",
     "theme",
     "colors"
   ],
   "dsh": {
+    "bundle": {
+      "patch": "./cordis.patch.yml"
+    },
     "client": {
       "platform": "web",
       "inject": [
@@ -47,7 +56,7 @@
   "scripts": {
     "build": "node build.mjs",
     "check": "node --check lib/client.js",
-    "test": "node test/render-test.mjs && node test/migration-test.mjs && node test/stale-default-test.mjs && node test/schedule-test.mjs",
+    "test": "node test/render-test.mjs && node test/migration-test.mjs && node test/stale-default-test.mjs && node test/schedule-test.mjs && node test/package-test.mjs",
     "preview": "node preview/build-panel.mjs"
   }
 }

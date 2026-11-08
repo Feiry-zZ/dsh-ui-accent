@@ -4,6 +4,8 @@
 
 给 DeepSeek Harness（DSH）的会话区按语义着色，并在「设置 → 界面配色」里逐项取色。颜色修改即时生效，保存在本机浏览器（`localStorage`），不写入 `settings.yaml`。
 
+插件以 **DSH 组合包（bundle）** 形式发布，可以直接在 DSH 的插件管理里粘贴本仓库地址安装，Windows / macOS / Linux 通用。
+
 界面文案跟随 DSH 通用设置的中英文切换（`locale` 服务），效果预览列举全部 15 项设置，并在固定高度内独立滚动。
 
 ![效果预览](./preview/preview.png)
@@ -55,34 +57,42 @@
 
 > 若设置里暂时看不到「界面配色」，刷新一次界面（`Ctrl+R`）即可。
 
-## 安装（本地插件）
+## 安装
 
-插件通过 profile 的补丁层接入，不修改 DSH 安装目录。要求 DSH 支持客户端插件（`dsh.client`）；安装脚本只用 Node 标准库，**Windows / macOS / Linux 通用**（DSH 本身依赖 Node，无需额外装东西）。
+插件以 **DSH 组合包（bundle）** 形式发布，两种安装方式任选其一。
+
+### 方式一：插件管理安装（推荐，任何平台）
+
+在 DSH 的 **设置 → 插件 → 安装** 里填入本仓库地址：
+
+```
+https://github.com/Feiry-zZ/dsh-ui-accent.git
+```
+
+DSH 会拉取仓库并把组合包补丁（`cordis.patch.yml`）叠加到 profile，插件随之激活；装完刷新界面（`Ctrl+R` / `Cmd+R`）即可在设置里看到「界面配色」。整个过程不需要 Node，也不需要手动建链接。
+
+### 方式二：本地链接安装（改代码时用）
+
+适合在仓库里直接改代码、靠 HMR 看效果：
 
 ```bash
-# 1. 克隆仓库到任意目录
 git clone git@github.com:Feiry-zZ/dsh-ui-accent.git
 cd dsh-ui-accent
-
-# 2. 安装（建目录链接 + 登记补丁）
 node install.mjs
 ```
 
-脚本只在 `<DSH_HOME>/profiles/desktop` 下做两件事（`<DSH_HOME>` 默认 `~/.dsh`，可用环境变量 `DSH_HOME` 覆盖）：
+脚本只用 Node 标准库，**Windows / macOS / Linux 通用**，在 `<DSH_HOME>/profiles/desktop` 下做两件事（`<DSH_HOME>` 默认 `~/.dsh`，可用环境变量覆盖）：
 
 1. 在 `node_modules/dsh-ui-accent` 建一个指向本仓库的目录链接——Windows 用 junction，macOS / Linux 用符号链接；
-2. 在 `cordis.patch.yml` 追加插件登记：
+2. 在 profile 的 `cordis.patch.yml` 追加插件登记：
 
 ```yaml
-# <DSH_HOME>/profiles/desktop/cordis.patch.yml
 - insert:
     - id: ui-accent
       name: dsh-ui-accent
 ```
 
-`cordis.patch.yml` 是热重载的：保存后 Loader 会重新组合补丁层并激活插件，无需重启 DSH；设置面板若还没出现，按 `Ctrl+R`（macOS `Cmd+R`）刷新一次界面。
-
-不想用脚本也可以手动装，等价于上面两步：
+不想用脚本也可以手动做等价的两步：
 
 ```bash
 # Windows（CMD / PowerShell 均可）
@@ -92,7 +102,9 @@ mklink /J "%USERPROFILE%\.dsh\profiles\desktop\node_modules\dsh-ui-accent" "D:\p
 ln -s "$(pwd)" ~/.dsh/profiles/desktop/node_modules/dsh-ui-accent
 ```
 
-然后手动把上面那段 YAML 追加到 `cordis.patch.yml` 末尾即可。
+然后把上面那段 YAML 追加到 profile 的 `cordis.patch.yml` 末尾。
+
+> ⚠️ 两种方式互斥：通过插件管理装过之后不要再运行 `install.mjs`，否则会重复注册 `ui-accent` 条目；切换方式前先卸载。
 
 Host 端激活后会写一行日志到 `<DSH_HOME>/logs/ui-accent.log`，可用于确认加载状态：
 
@@ -107,9 +119,12 @@ Host 端激活后会写一行日志到 `<DSH_HOME>/logs/ui-accent.log`，可用�
 
 ```
 dsh-ui-accent/
-├─ package.json           # dsh.client 声明（platform: web / inject）
+├─ package.json           # dsh.bundle（组合包补丁）+ dsh.client（platform: web / inject）
+├─ cordis.patch.yml       # 组合包补丁：把自己注册成插件条目
+├─ locale/                # 插件管理里展示的标题与描述（zh / en）
+├─ icon.svg               # 插件图标
 ├─ build.mjs              # 把 src/theme.css 内联进 lib/client.js
-├─ install.mjs            # 安装/卸载脚本（跨平台，仅用 Node 标准库）
+├─ install.mjs            # 本地链接安装/卸载脚本（跨平台，仅用 Node 标准库）
 ├─ LICENSE                # MIT 许可
 ├─ src/
 │  ├─ client.js           # 客户端插件源码（取色面板 + 配色状态）
@@ -121,7 +136,8 @@ dsh-ui-accent/
 │  ├─ render-test.mjs        # 面板结构 / 样式注入 / 颜色写入与持久化
 │  ├─ migration-test.mjs     # v1 → v3 配色存储迁移
 │  ├─ stale-default-test.mjs # 默认色升级：旧默认不算用户选择
-│  └─ schedule-test.mjs      # 拖动取色的帧合并与延后落盘
+│  ├─ schedule-test.mjs      # 拖动取色的帧合并与延后落盘
+│  └─ package-test.mjs       # 组合包打包契约（bundle / files / exports / icon）
 └─ preview/
    ├─ preview.html        # 效果预览页（?lang=en 切换英文）
    ├─ build-panel.mjs     # 把真实设置面板组件渲染成静态页，供截图使用
@@ -135,10 +151,11 @@ dsh-ui-accent/
 ```powershell
 node build.mjs                   # 生成 lib/client.js
 node --check lib\client.js       # 语法检查
-node test\render-test.mjs        # 以下四个自测都应当输出 OK
+node test\render-test.mjs        # 以下五个自测都应当输出 OK
 node test\migration-test.mjs
 node test\stale-default-test.mjs
 node test\schedule-test.mjs
+node test\package-test.mjs
 ```
 
 重新生成文档配图（需要 Chrome）：
@@ -165,13 +182,12 @@ bundle 内容变化会被 `@deepseek-ai/dsh-client-hmr` 检测到并自动重载
 
 ## 卸载
 
-```bash
-node install.mjs --uninstall
-```
+- **插件管理安装**：在 **设置 → 插件** 里卸载本组合包（会连同它注册的插件条目一起移除）。
+- **本地链接安装**：`node install.mjs --uninstall`（删链接并从 profile 的 `cordis.patch.yml` 移除条目，改动前备份为 `.bak`）。
 
-脚本会删除 profile 里的目录链接，并从 `cordis.patch.yml` 移除插件条目（改动前会备份为 `cordis.patch.yml.bak`），其它补丁条目不受影响。
+两种方式都需要刷新界面（`Ctrl+R` / `Cmd+R`）才能让设置面板消失：Host 侧立即卸载，但设置页与配色样式由客户端 bundle 注册。
 
-**注意**：卸载后 Host 侧立即卸载，但设置里的「界面配色」与配色样式由客户端 bundle 注册，需要刷新界面（`Ctrl+R` / `Cmd+R`）才会消失。不想用脚本就手动做等价的两步：
+不想用脚本就手动做等价的两步：
 
 1. 从 `cordis.patch.yml` 删除 `ui-accent` 的 `insert` 块（连同上方两行注释）；
 2. 删除目录链接：
@@ -184,7 +200,7 @@ rm ~/.dsh/profiles/desktop/node_modules/dsh-ui-accent
 rmdir "%USERPROFILE%\.dsh\profiles\desktop\node_modules\dsh-ui-accent"
 ```
 
-3. 可选：删除 `<DSH_HOME>/logs/ui-accent.log` 与仓库目录。已取色的配色保存在浏览器 `localStorage`，卸载不会清除，重装后自动恢复。
+已取色的配色保存在浏览器 `localStorage`，卸载不会清除，重装后自动恢复。
 
 ## 许可
 

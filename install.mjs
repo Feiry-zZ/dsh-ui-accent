@@ -47,6 +47,9 @@ const LEGACY_LINK_PATH = join(NODE_MODULES_DIR, LEGACY_PACKAGE_NAME)
 /** profile 补丁文件。 */
 const PATCH_FILE = join(PROFILE_DIR, 'cordis.patch.yml')
 
+/** profile 清单：用于判断插件是否已通过「插件管理」安装。 */
+const PROFILE_MANIFEST = join(PROFILE_DIR, 'package.json')
+
 /** 修改补丁前的备份后缀。 */
 const BACKUP_SUFFIX = '.bak'
 
@@ -56,6 +59,24 @@ const UNINSTALL = process.argv.includes('--uninstall')
 /** 打印一行进度。 */
 function log(message) {
   console.log(message)
+}
+
+/**
+ * 判断插件是否已经通过 DSH「插件管理」装进 profile。
+ * 那种情况下插件由组合包补丁层注册，再建本地链接会产生重复条目。
+ * @returns 已通过插件管理安装时返回 true。
+ */
+function isManagedByPluginManager() {
+  try {
+    // 去掉可能的 BOM，避免 JSON.parse 因为不可见字符失败。
+    const raw = readFileSync(PROFILE_MANIFEST, 'utf8').replace(/^\uFEFF/, '')
+    const manifest = JSON.parse(raw)
+    const bundles = manifest?.dsh?.profile?.bundles
+    return Boolean(manifest?.dependencies?.[PACKAGE_NAME]) || (Array.isArray(bundles) && bundles.includes(PACKAGE_NAME))
+  } catch {
+    // profile 清单缺失或损坏时按“未安装”处理，交给后续步骤给出提示。
+    return false
+  }
 }
 
 /**
@@ -160,9 +181,17 @@ function stripEntry(text) {
 
 /** 安装：建链接 + 登记补丁，可重复执行。 */
 function install() {
+  // 已经用「插件管理」装过时，组合包补丁层已经注册了插件，不要再加本地链接与条目。
+  if (isManagedByPluginManager()) {
+    log('检测到插件已通过 DSH「插件管理」安装（组合包），无需本地链接安装。')
+    log('如需改装本地开发版：先在 设置 → 插件 里卸载，再运行本脚本。')
+    return
+  }
   const state = inspectPath(LINK_PATH)
   if (state.kind === 'directory') {
-    throw new Error(`${LINK_PATH} 已存在且是真实目录，请先确认并手动删除`)
+    throw new Error(
+      `${LINK_PATH} 已存在且是真实目录（可能是之前插件管理安装的残留），请先删除它再重试：${LINK_PATH}`
+    )
   }
   if (state.kind === 'link') {
     const pointsToRepo = state.resolved === realpathSync(PLUGIN_ROOT) || state.raw === PLUGIN_ROOT
@@ -195,6 +224,11 @@ function install() {
 
 /** 卸载：删除链接 + 移除补丁条目，可重复执行。 */
 function uninstall() {
+  // 通过插件管理安装的副本由 profile 的依赖管理，脚本不越权删除。
+  if (isManagedByPluginManager()) {
+    log('插件是通过 DSH「插件管理」安装的，请在 设置 → 插件 里卸载。')
+    return
+  }
   if (inspectPath(LINK_PATH).kind === 'link') {
     removeLink()
   } else {
