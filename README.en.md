@@ -71,7 +71,7 @@ In DSH open **Settings → Plugins → Add plugin** and enter the package name o
 @feiry-zz/dsh-ui-accent
 ```
 
-You can also pin a version (`@feiry-zz/dsh-ui-accent@0.3.1`) or paste the Git repository URL (`https://github.com/Feiry-zZ/dsh-ui-accent.git`) to install from source. DSH layers the bundle patch (`cordis.patch.yml`) onto the profile, which activates the plugin. Refresh the window once (`Ctrl+R` / `Cmd+R`) if the settings entry is not there yet. No Node, no manual links.
+You can also append `@latest` to install the newest release (`@feiry-zz/dsh-ui-accent@latest`), or paste the Git repository URL (`https://github.com/Feiry-zZ/dsh-ui-accent.git`) to install from source. DSH layers the bundle patch (`cordis.patch.yml`) onto the profile, which activates the plugin. Refresh the window once (`Ctrl+R` / `Cmd+R`) if the settings entry is not there yet. No Node, no manual links.
 
 ### Option 2: local link (for hacking on the code)
 

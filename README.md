@@ -71,7 +71,7 @@
 @feiry-zz/dsh-ui-accent
 ```
 
-也可以填 `@feiry-zz/dsh-ui-accent@0.3.1` 固定版本，或填 Git 仓库地址（`https://github.com/Feiry-zZ/dsh-ui-accent.git`）从源码安装。DSH 会把组合包补丁（`cordis.patch.yml`）叠加到 profile，插件随之激活；装完刷新界面（`Ctrl+R` / `Cmd+R`）即可在设置里看到「界面配色」。整个过程不需要 Node，也不需要手动建链接。
+也可以在包名后加 `@latest` 明确安装最新版（`@feiry-zz/dsh-ui-accent@latest`），或填 Git 仓库地址（`https://github.com/Feiry-zZ/dsh-ui-accent.git`）从源码安装。DSH 会把组合包补丁（`cordis.patch.yml`）叠加到 profile，插件随之激活；装完刷新界面（`Ctrl+R` / `Cmd+R`）即可在设置里看到「界面配色」。整个过程不需要 Node，也不需要手动建链接。
 
 ### 方式二：本地链接安装（改代码时用）
 

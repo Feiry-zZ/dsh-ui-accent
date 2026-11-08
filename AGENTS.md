@@ -105,7 +105,7 @@ npm test                       # 5 个自测，必须全绿
 - `README.md` 默认中文，`README.en.md` 英文；两份**逐节对齐**（标题层级、代码块、表格行数、代码令牌一致）。
 - 单语版本里**不写「中文 / English」双语对照**：菜单名、按钮名只写本语言的那一个。
 - README 只放用户向内容（功能、配色、使用、安装、卸载、许可）；工程流程一律放本文件。
-- 占位符统一用 `<repo>` / `<DSH_HOME>`，示例版本号随发版更新。
+- 占位符统一用 `<repo>` / `<DSH_HOME>`；安装示例统一用 `@latest`，不写具体版本号，避免每次发版改文档。
 
 ### 重新生成配图
 
@@ -135,7 +135,7 @@ npm publish                   # prepublishOnly 会自动 build + check + 5 个�
 
 - 发布后到 GitHub 建与版本同名的 tag 的 Release（`v<version>`），Release notes 用中文。
 - npm 规则：发布后 **72 小时**内可 `npm unpublish`，之后只能 `npm deprecate`；**被删掉的版本号永久作废**，修正只能发新版本。
-- 大陆镜像 `registry.npmmirror.com` 通常几分钟内同步；装不到时用固定版本号 `@x.y.z` 安装。
+- 大陆镜像 `registry.npmmirror.com` 通常几分钟内同步；`@latest` 暂时装不到时稍后再试，或在插件管理里临时指定具体版本。
 
 ## 12. 本机环境（Windows）
 

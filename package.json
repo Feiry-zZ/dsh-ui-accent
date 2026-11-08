@@ -1,6 +1,6 @@
 {
   "name": "@feiry-zz/dsh-ui-accent",
-  "version": "0.3.1",
+  "version": "0.4.0",
   "description": "Accent colors for DeepSeek Harness: colorize result headings, bold text, inline code, thinking, questions and tool rows, with a settings panel for picking each color.",
   "license": "MIT",
   "author": "Feiry-zZ (https://github.com/Feiry-zZ)",
