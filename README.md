@@ -57,18 +57,21 @@
 
 ## 安装（本地插件）
 
-插件通过 profile 的补丁层接入，不修改 DSH 安装目录。要求 DSH 支持客户端插件（`dsh.client`）。
+插件通过 profile 的补丁层接入，不修改 DSH 安装目录。要求 DSH 支持客户端插件（`dsh.client`）；安装脚本只用 Node 标准库，**Windows / macOS / Linux 通用**（DSH 本身依赖 Node，无需额外装东西）。
 
-```powershell
+```bash
 # 1. 克隆仓库到任意目录
-git clone <repo-url> dsh-ui-accent
+git clone git@github.com:Feiry-zZ/dsh-ui-accent.git
 cd dsh-ui-accent
 
-# 2. 创建 profile 目录联接并检查补丁
-powershell -ExecutionPolicy Bypass -File .\install.ps1
+# 2. 安装（建目录链接 + 登记补丁）
+node install.mjs
 ```
 
-脚本会在 `<DSH_HOME>\profiles\desktop\node_modules\dsh-ui-accent` 创建指向仓库的目录联接（`<DSH_HOME>` 默认 `%USERPROFILE%\.dsh`，可用环境变量 `DSH_HOME` 覆盖），并在补丁文件里追加：
+脚本只在 `<DSH_HOME>/profiles/desktop` 下做两件事（`<DSH_HOME>` 默认 `~/.dsh`，可用环境变量 `DSH_HOME` 覆盖）：
+
+1. 在 `node_modules/dsh-ui-accent` 建一个指向本仓库的目录链接——Windows 用 junction，macOS / Linux 用符号链接；
+2. 在 `cordis.patch.yml` 追加插件登记：
 
 ```yaml
 # <DSH_HOME>/profiles/desktop/cordis.patch.yml
@@ -77,13 +80,21 @@ powershell -ExecutionPolicy Bypass -File .\install.ps1
       name: dsh-ui-accent
 ```
 
-`cordis.patch.yml` 是热重载的：保存后 Loader 会重新组合补丁层并激活插件，无需重启 DSH。手动安装也可以，只要上面两步等价即可；macOS / Linux 上用 `ln -s` 建符号链接代替目录联接：
+`cordis.patch.yml` 是热重载的：保存后 Loader 会重新组合补丁层并激活插件，无需重启 DSH；设置面板若还没出现，按 `Ctrl+R`（macOS `Cmd+R`）刷新一次界面。
+
+不想用脚本也可以手动装，等价于上面两步：
 
 ```bash
+# Windows（CMD / PowerShell 均可）
+mklink /J "%USERPROFILE%\.dsh\profiles\desktop\node_modules\dsh-ui-accent" "D:\path\to\dsh-ui-accent"
+
+# macOS / Linux
 ln -s "$(pwd)" ~/.dsh/profiles/desktop/node_modules/dsh-ui-accent
 ```
 
-Host 端激活后会写一行日志到 `<DSH_HOME>\logs\ui-accent.log`，可用于确认加载状态：
+然后手动把上面那段 YAML 追加到 `cordis.patch.yml` 末尾即可。
+
+Host 端激活后会写一行日志到 `<DSH_HOME>/logs/ui-accent.log`，可用于确认加载状态：
 
 ```
 [2026-11-03T06:03:04.391Z] host half activated
@@ -98,7 +109,7 @@ Host 端激活后会写一行日志到 `<DSH_HOME>\logs\ui-accent.log`，可用�
 dsh-ui-accent/
 ├─ package.json           # dsh.client 声明（platform: web / inject）
 ├─ build.mjs              # 把 src/theme.css 内联进 lib/client.js
-├─ install.ps1            # 创建 profile 目录联接并登记补丁
+├─ install.mjs            # 安装/卸载脚本（跨平台，仅用 Node 标准库）
 ├─ LICENSE                # MIT 许可
 ├─ src/
 │  ├─ client.js           # 客户端插件源码（取色面板 + 配色状态）
@@ -154,14 +165,26 @@ bundle 内容变化会被 `@deepseek-ai/dsh-client-hmr` 检测到并自动重载
 
 ## 卸载
 
-1. 从 `cordis.patch.yml` 删除 `ui-accent` 的 `insert` 块（保存即热卸载，样式与面板一并移除）。
-2. 删除目录联接：
-
-```powershell
-Remove-Item "$env:USERPROFILE\.dsh\profiles\desktop\node_modules\dsh-ui-accent" -Force
+```bash
+node install.mjs --uninstall
 ```
 
-3. 可选：删除 `<DSH_HOME>\logs\ui-accent.log` 与仓库目录。
+脚本会删除 profile 里的目录链接，并从 `cordis.patch.yml` 移除插件条目（改动前会备份为 `cordis.patch.yml.bak`），其它补丁条目不受影响。
+
+**注意**：卸载后 Host 侧立即卸载，但设置里的「界面配色」与配色样式由客户端 bundle 注册，需要刷新界面（`Ctrl+R` / `Cmd+R`）才会消失。不想用脚本就手动做等价的两步：
+
+1. 从 `cordis.patch.yml` 删除 `ui-accent` 的 `insert` 块（连同上方两行注释）；
+2. 删除目录链接：
+
+```bash
+# macOS / Linux
+rm ~/.dsh/profiles/desktop/node_modules/dsh-ui-accent
+
+# Windows（CMD）
+rmdir "%USERPROFILE%\.dsh\profiles\desktop\node_modules\dsh-ui-accent"
+```
+
+3. 可选：删除 `<DSH_HOME>/logs/ui-accent.log` 与仓库目录。已取色的配色保存在浏览器 `localStorage`，卸载不会清除，重装后自动恢复。
 
 ## 许可
 
