@@ -4,7 +4,7 @@
 
 给 DeepSeek Harness（DSH）的会话区按语义着色，并在「设置 → 界面配色」里逐项取色。颜色修改即时生效，保存在本机浏览器（`localStorage`），不写入 `settings.yaml`。
 
-插件以 **DSH 组合包（bundle）** 形式发布，可以直接在 DSH 的插件管理里粘贴本仓库地址安装，Windows / macOS / Linux 通用。
+插件以 **DSH 组合包（bundle）** 形式发布到 npm：`@feiry-zz/dsh-ui-accent`。在 DSH 的插件管理里填包名即可安装，Windows / macOS / Linux 通用。
 
 界面文案跟随 DSH 通用设置的中英文切换（`locale` 服务），效果预览列举全部 15 项设置，并在固定高度内独立滚动。
 
@@ -59,17 +59,17 @@
 
 ## 安装
 
-插件以 **DSH 组合包（bundle）** 形式发布，两种安装方式任选其一。
+插件以 **DSH 组合包（bundle）** 形式发布到 npm：**`@feiry-zz/dsh-ui-accent`**。两种安装方式任选其一。
 
 ### 方式一：插件管理安装（推荐，任何平台）
 
-在 DSH 的 **设置 → 插件 → 安装** 里填入本仓库地址：
+在 DSH 的 **设置 → 插件 → 安装** 里填入 npm 包名：
 
 ```
-https://github.com/Feiry-zZ/dsh-ui-accent.git
+@feiry-zz/dsh-ui-accent
 ```
 
-DSH 会拉取仓库并把组合包补丁（`cordis.patch.yml`）叠加到 profile，插件随之激活；装完刷新界面（`Ctrl+R` / `Cmd+R`）即可在设置里看到「界面配色」。整个过程不需要 Node，也不需要手动建链接。
+也可以填 `@feiry-zz/dsh-ui-accent@0.3.0` 固定版本，或填 Git 仓库地址（`https://github.com/Feiry-zZ/dsh-ui-accent.git`）从源码安装。DSH 会把组合包补丁（`cordis.patch.yml`）叠加到 profile，插件随之激活；装完刷新界面（`Ctrl+R` / `Cmd+R`）即可在设置里看到「界面配色」。整个过程不需要 Node，也不需要手动建链接。
 
 ### 方式二：本地链接安装（改代码时用）
 
@@ -83,23 +83,25 @@ node install.mjs
 
 脚本只用 Node 标准库，**Windows / macOS / Linux 通用**，在 `<DSH_HOME>/profiles/desktop` 下做两件事（`<DSH_HOME>` 默认 `~/.dsh`，可用环境变量覆盖）：
 
-1. 在 `node_modules/dsh-ui-accent` 建一个指向本仓库的目录链接——Windows 用 junction，macOS / Linux 用符号链接；
+1. 在 `node_modules/@feiry-zz/dsh-ui-accent` 建一个指向本仓库的目录链接——Windows 用 junction，macOS / Linux 用符号链接；
 2. 在 profile 的 `cordis.patch.yml` 追加插件登记：
 
 ```yaml
 - insert:
     - id: ui-accent
-      name: dsh-ui-accent
+      name: '@feiry-zz/dsh-ui-accent'
 ```
 
 不想用脚本也可以手动做等价的两步：
 
 ```bash
-# Windows（CMD / PowerShell 均可）
-mklink /J "%USERPROFILE%\.dsh\profiles\desktop\node_modules\dsh-ui-accent" "D:\path\to\dsh-ui-accent"
+# Windows（CMD / PowerShell 均可；带 scope 的包要先建好父目录）
+mkdir "%USERPROFILE%\.dsh\profiles\desktop\node_modules\@feiry-zz"
+mklink /J "%USERPROFILE%\.dsh\profiles\desktop\node_modules\@feiry-zz\dsh-ui-accent" "D:\path\to\dsh-ui-accent"
 
 # macOS / Linux
-ln -s "$(pwd)" ~/.dsh/profiles/desktop/node_modules/dsh-ui-accent
+mkdir -p ~/.dsh/profiles/desktop/node_modules/@feiry-zz
+ln -s "$(pwd)" ~/.dsh/profiles/desktop/node_modules/@feiry-zz/dsh-ui-accent
 ```
 
 然后把上面那段 YAML 追加到 profile 的 `cordis.patch.yml` 末尾。
@@ -173,6 +175,19 @@ chrome --headless=new --hide-scrollbars --force-device-scale-factor=2 --window-s
 
 bundle 内容变化会被 `@deepseek-ai/dsh-client-hmr` 检测到并自动重载该插件；只改 CSS 也会走同一条链路。
 
+## 发布（维护者）
+
+包名 `@feiry-zz/dsh-ui-accent` 带 scope，**发布前需要先有 npm 组织 `feiry-zz`**（npmjs.com → Organizations → 新建），且发布账号是组织成员；否则 `npm publish` 会返回 403。
+
+```powershell
+npm pkg get name version        # 确认包名与版本
+npm pack --dry-run             # 看打包内容（lib / locale / icon / cordis.patch.yml）
+npm publish --dry-run          # 干跑
+npm publish --access public    # 正式发布（prepublishOnly 会自动构建 + 跑 5 个自测）
+```
+
+版本号只影响「插件管理 → 检查更新」的比较，与 DSH 版本无关。注意 npm 发布 24 小时内才可以 `npm unpublish`，之后只能 `npm deprecate`。
+
 ## 存储与兼容性
 
 - 存储键 `dsh-accent.colors.v3`，结构为 `{ version: 3, colors: {...} }`，只保存与出厂默认不同的分类。
@@ -194,10 +209,10 @@ bundle 内容变化会被 `@deepseek-ai/dsh-client-hmr` 检测到并自动重载
 
 ```bash
 # macOS / Linux
-rm ~/.dsh/profiles/desktop/node_modules/dsh-ui-accent
+rm ~/.dsh/profiles/desktop/node_modules/@feiry-zz/dsh-ui-accent
 
 # Windows（CMD）
-rmdir "%USERPROFILE%\.dsh\profiles\desktop\node_modules\dsh-ui-accent"
+rmdir "%USERPROFILE%\.dsh\profiles\desktop\node_modules\@feiry-zz\dsh-ui-accent"
 ```
 
 已取色的配色保存在浏览器 `localStorage`，卸载不会清除，重装后自动恢复。

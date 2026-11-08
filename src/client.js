@@ -1,5 +1,5 @@
 window.__ModuleLoader__.load({
-  id: 'dsh-ui-accent',
+  id: '@feiry-zz/dsh-ui-accent',
   factory: (require) => {
     var module = { exports: {} }
     var exports = module.exports
@@ -10,7 +10,7 @@ window.__ModuleLoader__.load({
     const THEME_CSS = __THEME_CSS__
 
     /** 插件标识：style 标签归属与诊断信息共用。 */
-    const PLUGIN_ID = 'dsh-ui-accent'
+    const PLUGIN_ID = '@feiry-zz/dsh-ui-accent'
 
     /** 本地化命名空间：设置页文案随 DSH 通用设置的中英文切换。 */
     const SETTINGS_NS = 'settings.uiAccent'

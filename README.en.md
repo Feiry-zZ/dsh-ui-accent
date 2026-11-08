@@ -4,6 +4,8 @@ English | [简体中文](./README.md)
 
 Colorize the conversation area of DeepSeek Harness (DSH) by meaning, then pick every color in **Settings → Accent colors**. Changes apply instantly and are stored in your browser (`localStorage`) — never in `settings.yaml`.
 
+The plugin ships as a **DSH bundle** on npm: `@feiry-zz/dsh-ui-accent`. Install it by package name from the DSH plugin manager — Windows, macOS and Linux all the same.
+
 The panel follows the DSH locale setting (Chinese / English via the `locale` service), and its live preview lists all 15 color categories inside a fixed-height scroll area.
 
 ![Effect preview](./preview/preview-en.png)
@@ -57,17 +59,17 @@ Every category can be changed independently, and **Reset all** restores the defa
 
 ## Install
 
-The plugin ships as a **DSH bundle**, so you can install it straight from the plugin manager — pick either method below.
+The plugin ships as a **DSH bundle** on npm — `@feiry-zz/dsh-ui-accent` — so install it straight from the plugin manager. Pick either method below.
 
 ### Option 1: plugin manager (recommended, works everywhere)
 
-In DSH open **Settings → Plugins → Install** and paste this repository URL:
+In DSH open **Settings → Plugins → Install** and enter the npm package name:
 
 ```
-https://github.com/Feiry-zZ/dsh-ui-accent.git
+@feiry-zz/dsh-ui-accent
 ```
 
-DSH fetches the repository and layers the bundle patch (`cordis.patch.yml`) onto the profile, which activates the plugin. Refresh the window once (`Ctrl+R` / `Cmd+R`) if the settings entry is not there yet. No Node, no manual links.
+You can also pin a version (`@feiry-zz/dsh-ui-accent@0.3.0`) or paste the Git repository URL (`https://github.com/Feiry-zZ/dsh-ui-accent.git`) to install from source. DSH layers the bundle patch (`cordis.patch.yml`) onto the profile, which activates the plugin. Refresh the window once (`Ctrl+R` / `Cmd+R`) if the settings entry is not there yet. No Node, no manual links.
 
 ### Option 2: local link (for hacking on the code)
 
@@ -81,23 +83,25 @@ node install.mjs
 
 The script only uses the Node standard library (so **Windows, macOS and Linux** behave the same) and does two things under `<DSH_HOME>/profiles/desktop` (`<DSH_HOME>` defaults to `~/.dsh`, override with the `DSH_HOME` environment variable):
 
-1. creates `node_modules/dsh-ui-accent` as a directory link to this repository — a junction on Windows, a symlink on macOS / Linux;
+1. creates `node_modules/@feiry-zz/dsh-ui-accent` as a directory link to this repository — a junction on Windows, a symlink on macOS / Linux;
 2. appends this entry to the profile's `cordis.patch.yml`:
 
 ```yaml
 - insert:
     - id: ui-accent
-      name: dsh-ui-accent
+      name: '@feiry-zz/dsh-ui-accent'
 ```
 
 No script needed if you prefer the manual route — it is equivalent to the two steps above:
 
 ```bash
-# Windows (CMD or PowerShell)
-mklink /J "%USERPROFILE%\.dsh\profiles\desktop\node_modules\dsh-ui-accent" "D:\path\to\dsh-ui-accent"
+# Windows (CMD or PowerShell; create the scope directory first)
+mkdir "%USERPROFILE%\.dsh\profiles\desktop\node_modules\@feiry-zz"
+mklink /J "%USERPROFILE%\.dsh\profiles\desktop\node_modules\@feiry-zz\dsh-ui-accent" "D:\path\to\dsh-ui-accent"
 
 # macOS / Linux
-ln -s "$(pwd)" ~/.dsh/profiles/desktop/node_modules/dsh-ui-accent
+mkdir -p ~/.dsh/profiles/desktop/node_modules/@feiry-zz
+ln -s "$(pwd)" ~/.dsh/profiles/desktop/node_modules/@feiry-zz/dsh-ui-accent
 ```
 
 Then append the YAML block above to the end of the profile's `cordis.patch.yml`.
@@ -171,6 +175,19 @@ chrome --headless=new --hide-scrollbars --force-device-scale-factor=2 --window-s
 
 Bundle changes are detected by `@deepseek-ai/dsh-client-hmr`, which reloads the plugin automatically; CSS-only edits go through the same path.
 
+## Publish (maintainers)
+
+The package name is scoped (`@feiry-zz/dsh-ui-accent`), so **the npm organization `feiry-zz` must exist** (npmjs.com → Organizations) and the publishing account must be a member of it — otherwise `npm publish` returns 403.
+
+```powershell
+npm pkg get name version        # confirm name and version
+npm pack --dry-run             # inspect the tarball (lib / locale / icon / cordis.patch.yml)
+npm publish --dry-run          # dry run
+npm publish --access public    # real publish (prepublishOnly builds and runs all 5 tests first)
+```
+
+The version only affects the plugin manager's "check for updates"; it is independent of the DSH version. Note that npm only allows `npm unpublish` within 24 hours — after that you can only `npm deprecate`.
+
 ## Storage & compatibility
 
 - Storage key `dsh-accent.colors.v3`, shape `{ version: 3, colors: {...} }`, holding only categories that differ from the defaults.
@@ -192,10 +209,10 @@ To do the local-link variant by hand:
 
 ```bash
 # macOS / Linux
-rm ~/.dsh/profiles/desktop/node_modules/dsh-ui-accent
+rm ~/.dsh/profiles/desktop/node_modules/@feiry-zz/dsh-ui-accent
 
 # Windows (CMD)
-rmdir "%USERPROFILE%\.dsh\profiles\desktop\node_modules\dsh-ui-accent"
+rmdir "%USERPROFILE%\.dsh\profiles\desktop\node_modules\@feiry-zz\dsh-ui-accent"
 ```
 
 Picked colors live in the browser's `localStorage` and survive uninstall; they come back on reinstall.

@@ -1,5 +1,5 @@
 #!/usr/bin/env node
-import { copyFileSync, existsSync, lstatSync, mkdirSync, readFileSync, readlinkSync, realpathSync, symlinkSync, unlinkSync, writeFileSync } from 'node:fs'
+import { copyFileSync, existsSync, lstatSync, mkdirSync, readFileSync, readlinkSync, realpathSync, rmdirSync, symlinkSync, unlinkSync, writeFileSync } from 'node:fs'
 import { homedir } from 'node:os'
 import { dirname, join } from 'node:path'
 import { fileURLToPath } from 'node:url'
@@ -18,7 +18,7 @@ import { fileURLToPath } from 'node:url'
  */
 
 /** 插件包名：与 package.json 的 name 一致。 */
-const PACKAGE_NAME = 'dsh-ui-accent'
+const PACKAGE_NAME = '@feiry-zz/dsh-ui-accent'
 
 /** 重命名前的旧包名：仅用于提示残留。 */
 const LEGACY_PACKAGE_NAME = 'dsh-client-ui-accent'
@@ -107,7 +107,8 @@ function inspectPath(path) {
 
 /** 创建指向本仓库的目录链接：Windows 用 junction，其余平台用符号链接。 */
 function createLink() {
-  mkdirSync(NODE_MODULES_DIR, { recursive: true })
+  // 带 scope 的包名形如 @scope/name，父级目录也要一并建好。
+  mkdirSync(dirname(LINK_PATH), { recursive: true })
   // junction 只在 Windows 生效，其他平台会忽略该类型并创建普通符号链接。
   symlinkSync(PLUGIN_ROOT, LINK_PATH, 'junction')
   log(`已创建目录链接：${LINK_PATH} -> ${PLUGIN_ROOT}`)
@@ -121,6 +122,12 @@ function removeLink() {
   }
   unlinkSync(LINK_PATH)
   log(`已删除目录链接：${LINK_PATH}`)
+  // 带 scope 的包会留下空的 @scope 目录，顺手清掉（非空时 rmdir 会失败，忽略即可）。
+  try {
+    rmdirSync(dirname(LINK_PATH))
+  } catch {
+    // 目录里还有别的包时保留它。
+  }
 }
 
 /**
@@ -140,7 +147,8 @@ function entrySnippet() {
     `# 本地包经 profile 的 node_modules 链接解析（目标：${PLUGIN_ROOT}）。`,
     '- insert:',
     `    - id: ${ENTRY_ID}`,
-    `      name: ${PACKAGE_NAME}`,
+    // 以 @ 开头的 YAML 标量必须加引号，否则解析报错。
+    `      name: '${PACKAGE_NAME}'`,
     ''
   ].join('\n')
 }

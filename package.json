@@ -1,7 +1,6 @@
 {
-  "name": "dsh-ui-accent",
+  "name": "@feiry-zz/dsh-ui-accent",
   "version": "0.3.0",
-  "private": true,
   "description": "Accent colors for DeepSeek Harness: colorize result headings, bold text, inline code, thinking, questions and tool rows, with a settings panel for picking each color.",
   "license": "MIT",
   "author": "Feiry-zZ (https://github.com/Feiry-zZ)",
@@ -10,6 +9,9 @@
     "url": "git+https://github.com/Feiry-zZ/dsh-ui-accent.git"
   },
   "homepage": "https://github.com/Feiry-zZ/dsh-ui-accent#readme",
+  "bugs": {
+    "url": "https://github.com/Feiry-zZ/dsh-ui-accent/issues"
+  },
   "type": "module",
   "main": "lib/index.js",
   "exports": {
@@ -21,6 +23,7 @@
     },
     "./locale/*.json": "./locale/*.json",
     "./icon": "./icon.svg",
+    "./cordis.patch.yml": "./cordis.patch.yml",
     "./package.json": "./package.json"
   },
   "files": [
@@ -40,6 +43,9 @@
     "theme",
     "colors"
   ],
+  "publishConfig": {
+    "access": "public"
+  },
   "dsh": {
     "bundle": {
       "patch": "./cordis.patch.yml"
@@ -57,6 +63,7 @@
     "build": "node build.mjs",
     "check": "node --check lib/client.js",
     "test": "node test/render-test.mjs && node test/migration-test.mjs && node test/stale-default-test.mjs && node test/schedule-test.mjs && node test/package-test.mjs",
-    "preview": "node preview/build-panel.mjs"
+    "preview": "node preview/build-panel.mjs",
+    "prepublishOnly": "node build.mjs && node --check lib/client.js && npm test"
   }
 }

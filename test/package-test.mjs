@@ -30,11 +30,11 @@ assert(manifest.dsh !== undefined && manifest.dsh.bundle !== undefined, 'package
 assert(typeof manifest.dsh.bundle.patch === 'string', 'dsh.bundle.patch 必须是字符串路径')
 assert(existsSync(join(root, manifest.dsh.bundle.patch)), `组合包补丁文件不存在：${manifest.dsh.bundle.patch}`)
 
-// 2. 补丁内容：必须插入插件自己，id / name 与包名一致。
+// 2. 补丁内容：必须插入插件自己，id / name 与包名一致（带 @ 的标量要加引号）。
 const patchText = readFileSync(join(root, manifest.dsh.bundle.patch), 'utf8')
 assert(/-\s*insert:/.test(patchText), '组合包补丁缺少 insert 块')
 assert(new RegExp(`-\\s*id:\\s*ui-accent`).test(patchText), '组合包补丁缺少 id: ui-accent')
-assert(patchText.includes(`name: ${manifest.name}`), `组合包补丁的 name 必须是 ${manifest.name}`)
+assert(patchText.includes(`'${manifest.name}'`), `组合包补丁的 name 必须用引号包住 ${manifest.name}`)
 
 // 3. 客户端半声明的保留：插件管理安装后仍要能找到客户端 bundle。
 assert(manifest.dsh.client !== undefined, 'package.json 缺少 dsh.client 声明')
@@ -49,10 +49,11 @@ for (const entry of ['lib', 'cordis.patch.yml', 'locale/*.json', 'icon.svg']) {
 assert(existsSync(join(root, 'lib', 'index.js')), 'lib/index.js 不存在，请先执行 node build.mjs')
 assert(existsSync(join(root, 'lib', 'client.js')), 'lib/client.js 不存在，请先执行 node build.mjs')
 
-// 5. exports 暴露 locale 与图标，插件管理靠它们展示标题 / 描述 / 图标。
+// 5. exports 暴露 locale、图标与补丁，插件管理靠它们展示标题 / 描述 / 图标。
 const exportsField = manifest.exports ?? {}
 assert(exportsField['./locale/*.json'] !== undefined, 'exports 缺少 ./locale/*.json')
 assert(exportsField['./icon'] !== undefined, 'exports 缺少 ./icon')
+assert(exportsField['./cordis.patch.yml'] !== undefined, 'exports 缺少 ./cordis.patch.yml')
 assert(exportsField['./client'] !== undefined, 'exports 缺少 ./client')
 
 // 6. 两种语言的展示元数据都要有标题与描述。
@@ -71,8 +72,14 @@ const iconSize = statSync(iconPath).size
 assert(iconSize <= 256 * 1024, `图标超过 256 KiB：${iconSize} 字节`)
 assert(readFileSync(iconPath, 'utf8').trimStart().startsWith('<svg'), '图标不是 SVG')
 
-// 8. 基础包信息。
-assert(manifest.name === 'dsh-ui-accent', `包名应为 dsh-ui-accent，实际 ${manifest.name}`)
+// 8. 基础包信息与 npm 发布准备。
+assert(manifest.name === '@feiry-zz/dsh-ui-accent', `包名应为 @feiry-zz/dsh-ui-accent，实际 ${manifest.name}`)
+assert(manifest.private !== true, 'private 必须去掉，否则 npm publish 会被拒绝')
+assert(manifest.publishConfig?.access === 'public', 'publishConfig.access 应为 public（带 scope 的包默认 restricted）')
+assert(
+  typeof manifest.scripts?.prepublishOnly === 'string' && manifest.scripts.prepublishOnly.includes('test'),
+  'prepublishOnly 应包含构建与自测，避免发布旧产物'
+)
 assert(typeof manifest.version === 'string' && manifest.version.length > 0, '缺少 version')
 assert(manifest.license === 'MIT', 'license 应为 MIT')
 

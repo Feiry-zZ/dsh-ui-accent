@@ -1,7 +1,7 @@
-# dsh-ui-accent 组合包（bundle）
+# @feiry-zz/dsh-ui-accent 组合包（bundle）
 # 通过 DSH「设置 → 插件 → 安装」安装本包时，Loader 会把这一层补丁叠加到 profile 上，
 # 从而把插件本身注册进启动图。请勿同时再用 install.mjs 写 profile 的 cordis.patch.yml，
 # 否则会出现两条同名条目。
 - insert:
     - id: ui-accent
-      name: dsh-ui-accent
+      name: '@feiry-zz/dsh-ui-accent'

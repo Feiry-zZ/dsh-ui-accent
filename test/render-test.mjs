@@ -75,7 +75,7 @@ const ReactStub = {
 await import(new URL('../lib/client.js', import.meta.url).href)
 const registration = globalThis.__registration
 if (!registration) throw new Error('bundle 没有调用 window.__ModuleLoader__.load')
-if (registration.id !== 'dsh-ui-accent') throw new Error('bundle id 不正确: ' + registration.id)
+if (registration.id !== '@feiry-zz/dsh-ui-accent') throw new Error('bundle id 不正确: ' + registration.id)
 
 // 只允许 react；出现其它 require 说明 bundle 依赖失控。
 const exports = registration.factory((specifier) => {
