@@ -1,0 +1,53 @@
+{
+  "name": "dsh-ui-accent",
+  "version": "0.2.0",
+  "private": true,
+  "description": "Accent colors for DeepSeek Harness: colorize result headings, bold text, inline code, thinking, questions and tool rows, with a settings panel for picking each color.",
+  "license": "MIT",
+  "author": "Feiry-zZ (https://github.com/Feiry-zZ)",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/Feiry-zZ/dsh-ui-accent.git"
+  },
+  "homepage": "https://github.com/Feiry-zZ/dsh-ui-accent#readme",
+  "type": "module",
+  "main": "lib/index.js",
+  "exports": {
+    ".": {
+      "default": "./lib/index.js"
+    },
+    "./client": {
+      "default": "./lib/client.js"
+    },
+    "./package.json": "./package.json"
+  },
+  "files": [
+    "lib",
+    "src",
+    "README.md",
+    "README.en.md"
+  ],
+  "keywords": [
+    "dsh",
+    "deepseek-harness",
+    "plugin",
+    "theme",
+    "colors"
+  ],
+  "dsh": {
+    "client": {
+      "platform": "web",
+      "inject": [
+        "@deepseek-ai/dsh-client-runtime",
+        "@deepseek-ai/dsh-client-locale",
+        "@deepseek-ai/dsh-client-ui-settings"
+      ]
+    }
+  },
+  "scripts": {
+    "build": "node build.mjs",
+    "check": "node --check lib/client.js",
+    "test": "node test/render-test.mjs && node test/migration-test.mjs && node test/stale-default-test.mjs && node test/schedule-test.mjs",
+    "preview": "node preview/build-panel.mjs"
+  }
+}

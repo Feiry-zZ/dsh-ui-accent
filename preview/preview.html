@@ -1,0 +1,353 @@
+<!doctype html>
+<html lang="zh-CN">
+  <head>
+    <meta charset="utf-8" />
+    <title>dsh-ui-accent · 效果预览</title>
+    <link rel="stylesheet" href="../src/theme.css" />
+    <style>
+      :root {
+        --dsh-accent-heading: #c084fc;
+        --dsh-accent-strong: #f472b6;
+        --dsh-accent-question: #f87171;
+        --dsh-accent-bash: #b0cef2;
+        --dsh-accent-edit: #fbbf24;
+        --dsh-accent-write: #34d399;
+        --dsh-accent-read: #a5b4fc;
+        --dsh-accent-search: #38bdf8;
+        --dsh-accent-code: #a3e635;
+        --dsh-accent-todo: #e879f9;
+        --dsh-accent-skill: #fb923c;
+        --dsh-accent-plugin: #818cf8;
+        --dsh-accent-other: #ded7e5;
+        --dsw-alias-label-primary: #e8e9ea;
+        --dsw-alias-label-secondary: #a8abb0;
+        --dsw-alias-label-tertiary: #7f838a;
+        --dsw-alias-label-caption: #5b5f66;
+        --dsw-alias-label-quaternary: #6a6e75;
+        --dsw-alias-border-l2: rgba(255, 255, 255, 0.1);
+        --dsw-alias-bg-base: #1b1c1e;
+        --dsw-alias-markdown-code-block: #232426;
+        --dsw-alias-markdown-inline-code: #2a2b2e;
+        --dsw-alias-state-business-primary: #679efe;
+        --ds-font-family-code: Consolas, 'Cascadia Code', monospace;
+      }
+      * {
+        box-sizing: border-box;
+      }
+      body {
+        margin: 0;
+        padding: 22px 26px;
+        background: #141516;
+        color: var(--dsw-alias-label-primary);
+        font-family: 'Segoe UI', 'Microsoft YaHei', 'PingFang SC', system-ui, sans-serif;
+        font-size: 14px;
+        line-height: 24px;
+      }
+      .layout {
+        display: grid;
+        grid-template-columns: 540px 360px;
+        gap: 24px;
+        align-items: start;
+      }
+      .caption {
+        color: var(--dsw-alias-label-tertiary);
+        font-size: 12px;
+        line-height: 18px;
+        margin-bottom: 10px;
+      }
+      .transcript {
+        display: flex;
+        flex-direction: column;
+        gap: 8px;
+      }
+      .row {
+        display: flex;
+        align-items: center;
+        min-width: 0;
+        height: 24px;
+      }
+      .leading {
+        width: 16px;
+        height: 16px;
+        margin-right: 6px;
+        display: inline-grid;
+        place-items: center;
+        flex: none;
+        font-size: 12px;
+      }
+      .title {
+        font-size: 14px;
+        line-height: 24px;
+        flex: none;
+      }
+      .sep {
+        width: 2px;
+        height: 2px;
+        margin: 0 8px;
+        border-radius: 1px;
+        background: var(--dsw-alias-label-caption);
+        flex: none;
+      }
+      .summary {
+        overflow: hidden;
+        text-overflow: ellipsis;
+        white-space: nowrap;
+        color: var(--dsw-alias-label-tertiary);
+        font-size: 14px;
+        line-height: 24px;
+      }
+      .markdown h3 {
+        margin: 0 0 6px;
+        font-size: 16px;
+        line-height: 24px;
+      }
+      .markdown p {
+        margin: 0;
+      }
+      .markdown p + p {
+        margin-top: 4px;
+      }
+      .markdown code {
+        background: var(--dsw-alias-markdown-inline-code);
+        border-radius: 6px;
+        padding: 0 5px;
+        font-family: var(--ds-font-family-code);
+        font-size: 0.88em;
+      }
+      .markdown a {
+        color: var(--dsw-alias-state-business-primary);
+        text-decoration: none;
+      }
+      .panel {
+        border: 1px solid var(--dsw-alias-border-l2);
+        border-radius: 14px;
+        background: var(--dsw-alias-bg-base);
+        padding: 16px;
+      }
+      .panel h2 {
+        margin: 0 0 4px;
+        font-size: 16px;
+      }
+      .panel .desc {
+        margin: 0 0 14px;
+        color: var(--dsw-alias-label-tertiary);
+        font-size: 12px;
+        line-height: 18px;
+      }
+      .panel .scroll {
+        display: flex;
+        flex-direction: column;
+        gap: 6px;
+        max-height: 220px;
+        padding: 10px 12px;
+        border: 1px solid var(--dsw-alias-border-l2);
+        border-radius: 12px;
+        background: var(--dsw-alias-markdown-code-block);
+        overflow-y: auto;
+        scrollbar-width: thin;
+        font-size: 13px;
+        line-height: 20px;
+      }
+      .panel .scroll::-webkit-scrollbar {
+        width: 6px;
+      }
+      .panel .scroll::-webkit-scrollbar-thumb {
+        border-radius: 3px;
+        background: var(--dsw-alias-label-quaternary);
+      }
+      .panel .scroll .h {
+        margin: 0;
+        color: var(--dsh-accent-heading);
+        font-size: 14px;
+        font-weight: 600;
+        line-height: 22px;
+      }
+      .panel .scroll .p {
+        margin: 0;
+        color: var(--dsw-alias-label-primary);
+      }
+      .panel .scroll .p strong {
+        color: var(--dsh-accent-strong);
+      }
+      .panel .scroll .p code {
+        padding: 0 5px;
+        border-radius: 6px;
+        background: var(--dsw-alias-markdown-inline-code);
+        color: var(--dsw-alias-state-business-primary);
+        font-family: var(--ds-font-family-code);
+        font-size: 12px;
+      }
+      .panel .scroll .pvrow {
+        display: flex;
+        align-items: center;
+        gap: 6px;
+        min-width: 0;
+        white-space: nowrap;
+      }
+      .panel .scroll .dot {
+        width: 6px;
+        height: 6px;
+        border-radius: 50%;
+        background: currentColor;
+        flex: none;
+      }
+      .panel .scroll .label {
+        flex: none;
+        font-weight: 500;
+      }
+      .panel .scroll .sepc {
+        color: var(--dsw-alias-label-caption);
+        flex: none;
+      }
+      .panel .scroll .sum {
+        overflow: hidden;
+        text-overflow: ellipsis;
+        color: var(--dsw-alias-label-tertiary);
+      }
+      .panel .note {
+        margin-top: 10px;
+        color: var(--dsw-alias-label-tertiary);
+        font-size: 11px;
+        line-height: 16px;
+      }
+      .c-think { color: #adb2b8; }
+      .c-question { color: var(--dsh-accent-question); }
+      .c-bash { color: var(--dsh-accent-bash); }
+      .c-edit { color: var(--dsh-accent-edit); }
+      .c-write { color: var(--dsh-accent-write); }
+      .c-read { color: var(--dsh-accent-read); }
+      .c-search { color: var(--dsh-accent-search); }
+      .c-code { color: var(--dsh-accent-code); }
+      .c-todo { color: var(--dsh-accent-todo); }
+      .c-skill { color: var(--dsh-accent-skill); }
+      .c-plugin { color: var(--dsh-accent-plugin); }
+      .c-other { color: var(--dsh-accent-other); }
+    </style>
+  </head>
+  <body>
+    <div class="layout">
+      <div>
+        <div class="caption" data-i18n="caption">会话区（模拟 DSH 真实 DOM：class 与 data-* 钩子取自插件 bundle）</div>
+        <div class="transcript">
+          <div class="markdown _markdown_1r4m5_5">
+            <h3 data-i18n="heading">完成归档与发版说明</h3>
+            <p>
+              <span data-i18n="plain.before">普通正文，</span><strong data-i18n="plain.bold">这段是加粗强调</strong><span data-i18n="plain.after">，其余文字保持原色。</span>
+            </p>
+            <p>
+              <span data-i18n="code.before">行内代码 </span><code>docs/release/2026-11-13/README.md</code><span data-i18n="code.middle"> 与链接 </span><a href="#" data-i18n="code.link">发布说明</a><span data-i18n="code.after"> 同色。</span>
+            </p>
+          </div>
+
+          <div class="c-think">
+            <div class="row"><span class="leading">◔</span><span class="title" data-i18n="tool.think">思考</span><span class="sep"></span><span class="summary" data-i18n="sum.think">整理最终的校验步骤</span></div>
+          </div>
+          <div class="c-question">
+            <div class="row"><span class="leading">?</span><span class="title" data-i18n="tool.question">提问</span><span class="sep"></span><span class="summary" data-i18n="sum.question">确认归档范围</span></div>
+          </div>
+          <div class="c-bash">
+            <div class="row"><span class="leading">&gt;_</span><span class="title" data-i18n="tool.bash">运行命令</span><span class="sep"></span><span class="summary">Verify archive and release layout</span></div>
+          </div>
+          <div class="c-edit">
+            <div class="row"><span class="leading">✎</span><span class="title" data-i18n="tool.edit">编辑</span><span class="sep"></span><span class="summary">docs/release/2026-11-13/README.md</span></div>
+          </div>
+          <div class="c-write">
+            <div class="row"><span class="leading">✎</span><span class="title" data-i18n="tool.write">写入</span><span class="sep"></span><span class="summary">docs/release/2026-11-13/README.md</span></div>
+          </div>
+          <div class="c-read">
+            <div class="row"><span class="leading">◎</span><span class="title" data-i18n="tool.read">读取</span><span class="sep"></span><span class="summary">docs/release/2026-11-13/README.md</span></div>
+          </div>
+          <div class="c-search">
+            <div class="row"><span class="leading">⌕</span><span class="title" data-i18n="tool.search">搜索</span><span class="sep"></span><span class="summary">TODO in docs</span></div>
+          </div>
+          <div class="c-code">
+            <div class="row"><span class="leading">⌘</span><span class="title" data-i18n="tool.code">代码</span><span class="sep"></span><span class="summary">print('hello')</span></div>
+          </div>
+          <div class="c-todo">
+            <div class="row"><span class="leading">☑</span><span class="title" data-i18n="tool.todo">任务</span><span class="sep"></span><span class="summary" data-i18n="sum.todo">整理发版清单</span></div>
+          </div>
+          <div class="c-skill">
+            <div class="row"><span class="leading">✦</span><span class="title" data-i18n="tool.skill">技能</span><span class="sep"></span><span class="summary">openspec-apply-change</span></div>
+          </div>
+          <div class="c-plugin">
+            <div class="row"><span class="leading">◇</span><span class="title" data-i18n="tool.plugin">插件</span><span class="sep"></span><span class="summary">cordis_run</span></div>
+          </div>
+          <div class="c-other">
+            <div class="row"><span class="leading">⚙</span><span class="title" data-i18n="tool.other">其他工具</span><span class="sep"></span><span class="summary">mcp__dbx__list_tables</span></div>
+          </div>
+        </div>
+      </div>
+
+      <aside class="panel">
+        <h2 data-i18n="panel.title">界面配色</h2>
+        <p class="desc" data-i18n="panel.desc">为结果标题、加粗文字、行内代码、思考、提问以及各类工具行单独取色；修改即时生效，并保存在本机浏览器。</p>
+
+        <div class="scroll">
+          <p class="h" data-i18n="panel.heading">结果标题</p>
+          <p class="p"><span data-i18n="plain.before">普通正文，</span><strong data-i18n="plain.bold">这段是加粗强调</strong><span data-i18n="plain.after">，其余文字保持原色。</span></p>
+          <p class="p"><span data-i18n="panel.code.before">行内代码 </span><code>docs/release/2026-11-13/README.md</code><span data-i18n="panel.code.after"> 与链接同色。</span></p>
+
+          <div class="pvrow c-think"><span class="dot"></span><span class="label" data-i18n="tool.think">思考</span><span class="sepc">·</span><span class="sum" data-i18n="sum.think">整理最终的校验步骤</span></div>
+          <div class="pvrow c-question"><span class="dot"></span><span class="label" data-i18n="tool.question">提问</span><span class="sepc">·</span><span class="sum" data-i18n="sum.question">确认归档范围</span></div>
+          <div class="pvrow c-bash"><span class="dot"></span><span class="label" data-i18n="tool.bash">运行命令</span><span class="sepc">·</span><span class="sum">Verify archive and release layout</span></div>
+          <div class="pvrow c-edit"><span class="dot"></span><span class="label" data-i18n="tool.edit">编辑</span><span class="sepc">·</span><span class="sum">docs/release/2026-11-13/README.md</span></div>
+          <div class="pvrow c-write"><span class="dot"></span><span class="label" data-i18n="tool.write">写入</span><span class="sepc">·</span><span class="sum">docs/release/2026-11-13/README.md</span></div>
+          <div class="pvrow c-read"><span class="dot"></span><span class="label" data-i18n="tool.read">读取</span><span class="sepc">·</span><span class="sum">docs/release/2026-11-13/README.md</span></div>
+          <div class="pvrow c-search"><span class="dot"></span><span class="label" data-i18n="tool.search">搜索</span><span class="sepc">·</span><span class="sum">TODO in docs</span></div>
+          <div class="pvrow c-code"><span class="dot"></span><span class="label" data-i18n="tool.code">代码</span><span class="sepc">·</span><span class="sum">print('hello')</span></div>
+          <div class="pvrow c-todo"><span class="dot"></span><span class="label" data-i18n="tool.todo">任务</span><span class="sepc">·</span><span class="sum" data-i18n="sum.todo">整理发版清单</span></div>
+          <div class="pvrow c-skill"><span class="dot"></span><span class="label" data-i18n="tool.skill">技能</span><span class="sepc">·</span><span class="sum">openspec-apply-change</span></div>
+          <div class="pvrow c-plugin"><span class="dot"></span><span class="label" data-i18n="tool.plugin">插件</span><span class="sepc">·</span><span class="sum">cordis_run</span></div>
+          <div class="pvrow c-other"><span class="dot"></span><span class="label" data-i18n="tool.other">其他工具</span><span class="sepc">·</span><span class="sum">mcp__dbx__list_tables</span></div>
+        </div>
+
+        <div class="note" data-i18n="panel.note">预览列举全部 15 项设置（220px 内可滚动）；设置页中预览粘在顶部，下方配置项滚动时仍可见，改色即时对照。</div>
+      </aside>
+    </div>
+    <script>
+      // 文档截图用：带上 ?lang=en 时把预览文案切换成英文，效果图与插件英文界面保持一致。
+      const EN = {
+        'caption': 'Conversation area (mock DSH DOM: the classes and data-* hooks come from the plugin bundle)',
+        'heading': 'Archive and release notes complete',
+        'plain.before': 'Plain text, ',
+        'plain.bold': 'bold emphasis',
+        'plain.after': ', the rest keeps its color.',
+        'code.before': 'Inline code ',
+        'code.middle': ' matches the link ',
+        'code.link': 'release notes',
+        'code.after': '.',
+        'tool.think': 'Thinking',
+        'tool.question': 'Question',
+        'tool.bash': 'Run command',
+        'tool.edit': 'Edit',
+        'tool.write': 'Write',
+        'tool.read': 'Read',
+        'tool.search': 'Search',
+        'tool.code': 'Code',
+        'tool.todo': 'Task',
+        'tool.skill': 'Skill',
+        'tool.plugin': 'Plugin',
+        'tool.other': 'Other tools',
+        'sum.think': 'Preparing the final verification steps',
+        'sum.question': 'Confirm the archive scope',
+        'sum.todo': 'Prepare the release checklist',
+        'panel.title': 'Accent colors',
+        'panel.desc': 'Pick colors for result titles, bold text, inline code, thinking, questions and every tool row. Changes apply instantly and are saved in this browser.',
+        'panel.heading': 'Result title',
+        'panel.code.before': 'Inline code ',
+        'panel.code.after': ' matches links.',
+        'panel.note': 'The preview lists all 15 settings and scrolls within 220px. In the settings page it sticks to the top while the rows below scroll, so you see every change live.'
+      }
+      if (new URLSearchParams(location.search).get('lang') === 'en') {
+        document.documentElement.lang = 'en'
+        document.title = 'dsh-ui-accent · effect preview'
+        for (const node of document.querySelectorAll('[data-i18n]')) {
+          const text = EN[node.dataset.i18n]
+          if (text !== undefined) {
+            node.textContent = text
+          }
+        }
+      }
+    </script>
+  </body>
+</html>

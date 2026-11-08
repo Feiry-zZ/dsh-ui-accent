@@ -1,0 +1,382 @@
+/* ============================================================
+ * DSH 界面配色插件 —— 会话区取色规则
+ * 所有颜色来自 --dsh-accent-* 变量，由客户端插件在启动/取色时写入根元素。
+ * ============================================================ */
+
+/* ---------- 结果与强调文字 ---------- */
+
+/* 结果标题：Markdown 一至六级标题 */
+[class*='_markdown'] :is(h1, h2, h3, h4, h5, h6) {
+  color: var(--dsh-accent-heading, #c084fc) !important;
+}
+
+/* 加粗文字：Markdown strong / b */
+[class*='_markdown'] :is(strong, b) {
+  color: var(--dsh-accent-strong, #f472b6) !important;
+}
+
+/* 行内代码：默认与超链接同色（跟随主题的 business-primary），可单独覆盖 */
+[class*='_markdown'] :not(pre) > code,
+[class*='_markdown'] :not(pre) > code :is(a, button) {
+  color: var(--dsh-accent-inline-code, var(--dsw-alias-state-business-primary)) !important;
+}
+
+/* ---------- 会话行 ---------- */
+
+/* 思考行：默认不覆盖，沿用 DSH 主题原色；仅在用户显式取色后（html 带开关属性）生效 */
+html[data-dsh-accent-think] [data-variant='think'] :is([class*='_title'], [class*='_leading'], [class*='_chevron'], [class*='_summary'], [class*='_thinkBody']) {
+  color: var(--dsh-accent-think, #adb2b8) !important;
+}
+
+/* ---------- 工具行 ---------- */
+
+/* 兜底：未单独列出的工具使用“其他工具”颜色 */
+[data-tool] :is([class*='_title'], [class*='_leading']) {
+  color: var(--dsh-accent-other, #ded7e5) !important;
+}
+
+/* 运行命令：bash / pwsh */
+[data-tool='bash'] :is([class*='_title'], [class*='_leading']),
+[data-tool='pwsh'] :is([class*='_title'], [class*='_leading']),
+[data-variant='bash'] :is([class*='_title'], [class*='_leading']) {
+  color: var(--dsh-accent-bash, #b0cef2) !important;
+}
+
+/* 编辑：edit */
+[data-tool='edit'] :is([class*='_title'], [class*='_leading']),
+[data-variant='edit'] :is([class*='_title'], [class*='_leading']) {
+  color: var(--dsh-accent-edit, #fbbf24) !important;
+}
+
+/* 写入：write */
+[data-tool='write'] :is([class*='_title'], [class*='_leading']),
+[data-variant='write'] :is([class*='_title'], [class*='_leading']) {
+  color: var(--dsh-accent-write, #34d399) !important;
+}
+
+/* 读取：read / web_fetch */
+[data-tool='read'] :is([class*='_title'], [class*='_leading']),
+[data-tool='web_fetch'] :is([class*='_title'], [class*='_leading']),
+[data-variant='read'] :is([class*='_title'], [class*='_leading']) {
+  color: var(--dsh-accent-read, #a5b4fc) !important;
+}
+
+/* 搜索：grep / glob / web_search */
+[data-tool='grep'] :is([class*='_title'], [class*='_leading']),
+[data-tool='glob'] :is([class*='_title'], [class*='_leading']),
+[data-tool='web_search'] :is([class*='_title'], [class*='_leading']),
+[data-variant='search'] :is([class*='_title'], [class*='_leading']) {
+  color: var(--dsh-accent-search, #38bdf8) !important;
+}
+
+/* 代码：run_code */
+[data-tool='run_code'] :is([class*='_title'], [class*='_leading']),
+[data-variant='code'] :is([class*='_title'], [class*='_leading']) {
+  color: var(--dsh-accent-code, #a3e635) !important;
+}
+
+/* 任务：todo_write */
+[data-tool='todo_write'] :is([class*='_title'], [class*='_leading']) {
+  color: var(--dsh-accent-todo, #e879f9) !important;
+}
+
+/* 技能：skill */
+[data-tool='skill'] :is([class*='_title'], [class*='_leading']) {
+  color: var(--dsh-accent-skill, #2dd4bf) !important;
+}
+
+/* 插件：cordis_* 系列 */
+[data-tool^='cordis_'] :is([class*='_title'], [class*='_leading']) {
+  color: var(--dsh-accent-plugin, #818cf8) !important;
+}
+
+/* 提问：ask_user_question（放在工具行规则最后，确保优先级） */
+[data-tool='ask_user_question'] :is([class*='_title'], [class*='_leading']) {
+  color: var(--dsh-accent-question, #f87171) !important;
+}
+
+/* ============================================================
+ * 设置侧边栏：界面配色面板
+ * 视觉尽量复用 DSH 设计令牌，深浅色主题自动适配。
+ * ============================================================ */
+
+.dsh-accent-section {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+  padding: 4px 2px 28px;
+  color: var(--dsw-alias-label-primary, #0f1115);
+  font-size: 14px;
+  line-height: 22px;
+}
+
+.dsh-accent-head {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+
+.dsh-accent-title {
+  margin: 0;
+  font-size: 16px;
+  font-weight: 600;
+  line-height: 24px;
+}
+
+.dsh-accent-desc {
+  margin: 0;
+  color: var(--dsw-alias-label-tertiary, #81858c);
+  font-size: 12px;
+  line-height: 18px;
+}
+
+.dsh-accent-group {
+  display: flex;
+  flex-direction: column;
+  border: 1px solid var(--dsw-alias-border-l2, rgba(0, 0, 0, 0.1));
+  border-radius: 12px;
+  padding: 12px 16px 4px;
+}
+
+.dsh-accent-group-head {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+  padding-bottom: 6px;
+}
+
+.dsh-accent-group-title {
+  margin: 0;
+  font-size: 13px;
+  font-weight: 600;
+  line-height: 20px;
+}
+
+.dsh-accent-group-desc {
+  margin: 0;
+  color: var(--dsw-alias-label-tertiary, #81858c);
+  font-size: 12px;
+  line-height: 18px;
+}
+
+.dsh-accent-row {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  padding: 9px 0;
+  border-top: 1px solid var(--dsw-alias-border-l2, rgba(0, 0, 0, 0.1));
+}
+
+.dsh-accent-row-text {
+  display: flex;
+  flex-direction: column;
+  min-width: 0;
+}
+
+.dsh-accent-row-label {
+  font-size: 13px;
+  line-height: 20px;
+}
+
+.dsh-accent-row-hint {
+  color: var(--dsw-alias-label-tertiary, #81858c);
+  font-size: 11px;
+  line-height: 16px;
+}
+
+/* “原色”标记：表示该分类当前不覆盖、跟随主题 */
+.dsh-accent-badge {
+  display: inline-block;
+  margin-left: 6px;
+  padding: 0 6px;
+  border: 1px solid var(--dsw-alias-border-l2, rgba(0, 0, 0, 0.1));
+  border-radius: 999px;
+  color: var(--dsw-alias-label-tertiary, #81858c);
+  font-size: 10px;
+  font-weight: 400;
+  line-height: 16px;
+  vertical-align: 1px;
+}
+
+.dsh-accent-row-controls {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  flex: none;
+}
+
+.dsh-accent-swatch {
+  width: 30px;
+  height: 30px;
+  padding: 0;
+  border: 1px solid var(--dsw-alias-border-l2, rgba(0, 0, 0, 0.1));
+  border-radius: 8px;
+  background: transparent;
+  cursor: pointer;
+}
+
+.dsh-accent-swatch::-webkit-color-swatch-wrapper {
+  padding: 3px;
+}
+
+.dsh-accent-swatch::-webkit-color-swatch {
+  border: none;
+  border-radius: 5px;
+}
+
+.dsh-accent-hex {
+  width: 84px;
+  height: 28px;
+  box-sizing: border-box;
+  padding: 0 8px;
+  border: 1px solid var(--dsw-alias-border-l2, rgba(0, 0, 0, 0.1));
+  border-radius: 8px;
+  background: var(--dsw-alias-bg-base, #fff);
+  color: var(--dsw-alias-label-primary, #0f1115);
+  font-family: var(--ds-font-family-code, Consolas, monospace);
+  font-size: 12px;
+  line-height: 26px;
+  outline: none;
+}
+
+.dsh-accent-hex:focus {
+  border-color: var(--dsw-alias-state-business-primary, #4176e6);
+}
+
+.dsh-accent-reset,
+.dsh-accent-button {
+  height: 28px;
+  padding: 0 10px;
+  border: 1px solid var(--dsw-alias-border-l2, rgba(0, 0, 0, 0.1));
+  border-radius: 8px;
+  background: transparent;
+  color: var(--dsw-alias-label-secondary, #61666b);
+  font-size: 12px;
+  line-height: 26px;
+  cursor: pointer;
+}
+
+.dsh-accent-reset:hover,
+.dsh-accent-button:hover {
+  background: var(--dsw-alias-interactive-bg-hover, rgba(0, 0, 0, 0.04));
+  color: var(--dsw-alias-label-primary, #0f1115);
+}
+
+.dsh-accent-preview {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  /* 粘在设置内容区顶部：向下滚动配置项时预览始终可见，改色即时对照 */
+  position: sticky;
+  top: 0;
+  z-index: 8;
+  padding: 12px 14px;
+  border: 1px solid var(--dsw-alias-border-l2, rgba(0, 0, 0, 0.1));
+  border-radius: 12px;
+  background: var(--dsw-alias-markdown-code-block, #f5f6f7);
+  box-shadow: 0 10px 24px -16px rgba(0, 0, 0, 0.55);
+}
+
+.dsh-accent-preview-head {
+  color: var(--dsw-alias-label-tertiary, #81858c);
+  font-size: 11px;
+  line-height: 16px;
+}
+
+.dsh-accent-preview-body {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  /* 预览列举全部 15 项设置，固定高度内独立滚动，避免把设置页撑得过长 */
+  position: relative;
+  max-height: 220px;
+  padding-right: 6px;
+  overflow-y: auto;
+  overscroll-behavior: contain;
+  scrollbar-width: thin;
+  scrollbar-color: var(--dsw-alias-label-quaternary, rgba(128, 128, 128, 0.5)) transparent;
+  font-size: 13px;
+  line-height: 20px;
+}
+
+.dsh-accent-preview-body::-webkit-scrollbar {
+  width: 6px;
+}
+
+.dsh-accent-preview-body::-webkit-scrollbar-thumb {
+  border-radius: 3px;
+  background: var(--dsw-alias-label-quaternary, rgba(128, 128, 128, 0.5));
+}
+
+.dsh-accent-pv-heading {
+  margin: 0;
+  color: var(--dsh-accent-heading, #c084fc);
+  font-size: 14px;
+  font-weight: 600;
+  line-height: 22px;
+}
+
+.dsh-accent-pv-text {
+  margin: 0;
+  color: var(--dsw-alias-label-primary, #0f1115);
+}
+
+.dsh-accent-pv-strong {
+  color: var(--dsh-accent-strong, #f472b6);
+  font-weight: 600;
+}
+
+/* 行内代码样例：与正文中的行内代码同色，带浅色底 */
+.dsh-accent-pv-code {
+  padding: 0 5px;
+  border-radius: 6px;
+  background: var(--dsw-alias-markdown-inline-code, rgba(127, 127, 127, 0.16));
+  color: var(--dsh-accent-inline-code, var(--dsw-alias-state-business-primary, #4176e6));
+  font-family: var(--ds-font-family-code, Consolas, monospace);
+  font-size: 12px;
+}
+
+.dsh-accent-pv-row {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  min-width: 0;
+  white-space: nowrap;
+}
+
+.dsh-accent-pv-dot {
+  width: 6px;
+  height: 6px;
+  border-radius: 50%;
+  background: currentColor;
+  flex: none;
+}
+
+.dsh-accent-pv-label {
+  flex: none;
+  font-weight: 500;
+}
+
+.dsh-accent-pv-sep {
+  color: var(--dsw-alias-label-caption, #b7bac0);
+  flex: none;
+}
+
+.dsh-accent-pv-summary {
+  overflow: hidden;
+  color: var(--dsw-alias-label-tertiary, #81858c);
+  text-overflow: ellipsis;
+}
+
+.dsh-accent-footer {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.dsh-accent-footer-hint {
+  color: var(--dsw-alias-label-tertiary, #81858c);
+  font-size: 11px;
+  line-height: 16px;
+}
